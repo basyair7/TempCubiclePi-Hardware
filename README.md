@@ -13,8 +13,8 @@ Tujuan program ini untuk menjaga suhu dan kelembapan pada kubikel 20kv secara ot
 Silahkan download <a href="https://sqlitebrowser.org/dl/">DB Browser for SQLite</a> agar lebih leluasa untuk operasi aplikasi TempCubiclePi
 
 ## Spesifikasi
-Program ini berjalan pada raspberry 3b, raspberry 4b, mini server, ESP32, dan arduino uno (Atmega328p)
-
+- Program ini berjalan pada raspberry 3b, raspberry 4b, mini server, ESP32, dan arduino uno (Atmega328p)
+- Hanya bisa pada aplikasi TempCubiclePi versi 1.7.2, versi 1.7.3, hingga terbaru.
 # Lisensi Aplikasi
 Aplikasi ini memiliki lisensi BSD 3-Clause License, dengan catatan
 1. Harus memiliki Database Config untuk menjalankan program
