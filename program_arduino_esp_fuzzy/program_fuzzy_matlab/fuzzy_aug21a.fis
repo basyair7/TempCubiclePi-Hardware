@@ -1,0 +1,64 @@
+[System]
+Name='fuzzy_aug21a'
+Type='sugeno'
+Version=2.0
+NumInputs=2
+NumOutputs=2
+NumRules=16
+AndMethod='prod'
+OrMethod='probor'
+ImpMethod='prod'
+AggMethod='sum'
+DefuzzMethod='wtaver'
+
+[Input1]
+Name='temperature'
+Range=[20 50]
+NumMFs=4
+MF1='T2':'trimf',[26 30 34]
+MF2='T3':'trimf',[33 37 41]
+MF3='T4':'trimf',[40 45 50.01]
+MF4='T1':'trimf',[19.97 23.5 27]
+
+[Input2]
+Name='humidity'
+Range=[30 90]
+NumMFs=4
+MF1='H1':'trapmf',[30 30 38.35 46]
+MF2='H2':'trimf',[45 52.5 61]
+MF3='H3':'trimf',[60 67.5 75]
+MF4='H4':'trapmf',[74 81.65 100 100]
+
+[Output1]
+Name='heater'
+Range=[40 100]
+NumMFs=3
+MF1='low':'constant',[60]
+MF2='medium':'constant',[80]
+MF3='high':'constant',[100]
+
+[Output2]
+Name='fan'
+Range=[0 80]
+NumMFs=3
+MF1='low':'constant',[0]
+MF2='medium':'constant',[65]
+MF3='high':'constant',[80]
+
+[Rules]
+4 4, 3 3 (1) : 1
+4 3, 3 2 (1) : 1
+4 2, 2 1 (1) : 1
+4 1, 1 1 (1) : 1
+1 4, 3 3 (1) : 1
+1 3, 3 2 (1) : 1
+1 2, 2 1 (1) : 1
+1 1, 1 1 (1) : 1
+2 4, 3 3 (1) : 1
+2 3, 3 2 (1) : 1
+2 2, 2 1 (1) : 1
+2 1, 1 1 (1) : 1
+3 4, 2 2 (1) : 1
+3 3, 2 1 (1) : 1
+3 2, 1 1 (1) : 1
+3 1, 1 1 (1) : 1
