@@ -1,6 +1,10 @@
 # TempCubiclePi-Hardware
 Project Tugas Akhir Fathul Basyair (Mahasiswa Teknik Elektro USK 2019)
 
+## Keterangan Direktori
+- program_server_1 : berisi program C++ untuk arduino uno (atmega328p), esp32 board, dan file matlab (fuzzy fis)
+- program_server_2 : berisi program Python untuk server Raspberry Pi atau Mini PC
+
 ## Pembaruan Program
 - Memperbaiki program arduino sebagai input PWM dimmer
 - Memperbaiki dan menambahkan fungsi enable/disable program fuzzy
