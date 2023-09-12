@@ -1,10 +1,13 @@
-/* 
+/*! @file main.cpp
+ * @version 1.5-rev2
+ * @mainpage
  * Program proses fuzzifikasi modul dimmer (PlatformIO)
- * Version : 1.5-rev2
+ * @section
+ * VERSION : 1.5-rev2
  * NAMA    : FATHUL BASYAIR
  * NPM     : 1904105010004
  * PRODI   : TEKNIK ELEKTRO (BIDANG TEKNIK TENAGA LISTRIK)
- */
+*/
 
 #include <Arduino.h>
 #include <RBDdimmer.h>

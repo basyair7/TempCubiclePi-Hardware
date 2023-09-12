@@ -1,3 +1,7 @@
+/*! @file 3_programMain.cpp
+ * @version 1.5-rev2
+*/
+
 #include <Arduino.h>
 #include "1_configProgram.h"
 
@@ -42,11 +46,11 @@ void funcMain(void) {
         datapzem.pF = readpF();
         // jika temperature dibawah batas / tidak ada tegangan di jalur daya heater, maka buzzer akan menyala
         if(datadht.temperature < MIN_TEMP && datadht.humidity > MAX_HUM)
-        buzzer_error(pin_buzzer, waktuSekarang, 200);
+            buzzer_error(pin_buzzer, waktuSekarang, 200);
         if (datadht.temperature == 0.0 || datapzem.V == 0.0 || datapzem.I == 0.0) 
-        buzzer_error(pin_buzzer, waktuSekarang, 200);
+            buzzer_error(pin_buzzer, waktuSekarang, 200);
         else
-        buzzer_main(pin_buzzer, LOW);
+            buzzer_main(pin_buzzer, LOW);
         
         // print_data();
     }

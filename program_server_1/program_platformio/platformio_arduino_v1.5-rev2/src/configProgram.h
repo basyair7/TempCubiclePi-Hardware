@@ -1,4 +1,11 @@
+/*! @file configProgram.h
+ * @version 1.5-rev2
+*/
+
 #include <Arduino.h>
+
+#ifndef CONFIGPROGRAM_H
+#define CONFIGPROGRAM_H
 
 extern int getPower_ACFan, getPower_ACHeater;
 extern int callback_2, callback_3;
@@ -25,3 +32,5 @@ extern void atmegaReset(unsigned long millisMain, long interval, bool reset);
 extern void getDataESP();
 extern void sendSerialData(long millisMain, int powerHeater, int powerFan);
 extern void sendCallback(void);
+
+#endif

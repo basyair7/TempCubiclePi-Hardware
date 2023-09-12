@@ -1,3 +1,7 @@
+/*! @file 7_SerialMonitor.ino
+ * @version 1.5-rev2
+*/
+
 void print_data(void) {
   Serial.println(F("Control Voltage Fan Exhaust & Heater"));
   Serial.println(F("******************************************************"));

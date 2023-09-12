@@ -1,3 +1,7 @@
+/*! @file 10_serialData.cpp
+ * @version 1.5-rev2
+*/
+
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include "1_configProgram.h"
@@ -12,7 +16,7 @@ void sendDataESP(void) {
     if(callback_1 == 1) {
         // masukan nilai ke dalam format json
         // jika suhu pada MCU tidak terdeteksi, maka nilai FIS Heater 100
-        if(datadht.temperature == 0.0 || datadht.temperature <= 0.0 | stateFuzzy == false)
+        if(datadht.temperature == 0.0 || datadht.temperature <= 0.0 || stateFuzzy == false)
         {
             data["heater"] = 100;
             data["fan"] = 0;
@@ -41,8 +45,8 @@ void getDataAtmega(void) {
     if(!err) {
         callback_4 = data["callback_4"];
         if(callback_4 == 1){
-        datafuzzy.powerHeater = data["dimheater"];
-        datafuzzy.powerFan = data["dimfan"];
+            datafuzzy.powerHeater = data["dimheater"];
+            datafuzzy.powerFan = data["dimfan"];
         }
     }
 }

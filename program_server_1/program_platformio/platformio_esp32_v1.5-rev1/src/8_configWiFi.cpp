@@ -1,3 +1,7 @@
+/*! @file 8_configWiFi.cpp
+ * @version 1.5-rev2
+*/
+
 #include <Arduino.h>
 #include <WiFi.h>
 #include "1_configProgram.h"

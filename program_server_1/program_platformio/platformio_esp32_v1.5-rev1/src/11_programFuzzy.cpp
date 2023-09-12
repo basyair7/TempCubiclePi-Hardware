@@ -1,9 +1,14 @@
+/*! @file 11_programFuzzy.cpp
+ * @version 1.5-rev2
+ * @details
+ ***********************************************************************
+ * Support functions for Fuzzy Inference System
+ ***********************************************************************
+*/
+
 #include <Arduino.h>
 #include "1_configProgram.h"
 
-//***********************************************************************
-// Support functions for Fuzzy Inference System
-//***********************************************************************
 // Triangular Member Function
 FIS_TYPE fis_trimf(FIS_TYPE x, FIS_TYPE *p)
 {

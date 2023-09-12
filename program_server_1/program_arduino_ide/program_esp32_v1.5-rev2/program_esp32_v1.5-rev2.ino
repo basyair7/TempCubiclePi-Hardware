@@ -1,10 +1,13 @@
-/* 
- * Program Pengambilan dan Mengirim data ESP32 ke server Raspberry Pi (Web Server Local)
- * Version : 1.5-rev2
+/*! @file program_esp32-v1.5-rev2.ino
+ * @version 1.5-rev2
+ * @mainpage 
+ * Program Pengambilan dan Mengirim data ESP32 ke server Raspberry Pi (Web Server Local) (Arduino IDE)
+ * @section
+ * VERSION : 1.5-rev2
  * NAMA    : FATHUL BASYAIR
  * NPM     : 1904105010004
  * PRODI   : TEKNIK ELEKTRO (BIDANG TEKNIK TENAGA LISTRIK)
- */
+*/
  
 #include <DHT.h>
 #include <Wire.h>
@@ -62,7 +65,9 @@ void setup() {
   atmegaSerial.begin(9600);
 
   int stateFuzzySwitch = EEPROM.read(0);
+  int stateBuzzerSwitch = EEPROM.read(1);
   if(stateFuzzySwitch == 0) stateFuzzy = false;
+  if(stateBuzzerSwitch == 0) buzzerSwitch = false;
 
   // pasang konfigurasi WiFi ESP32 yang baru
   // cek reconnectWiFi jika wifi esp32 terputus dari server

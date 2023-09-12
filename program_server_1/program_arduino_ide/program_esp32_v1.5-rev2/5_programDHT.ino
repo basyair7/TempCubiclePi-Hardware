@@ -1,3 +1,7 @@
+/*! @file 5_programDHT.ino
+ * @version 1.5-rev2
+*/
+
 // membuat program dht
 float temperature(void)
 {

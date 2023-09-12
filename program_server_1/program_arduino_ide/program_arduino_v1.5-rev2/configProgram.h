@@ -1,3 +1,10 @@
+/*! @file configProgram.h
+ * @version 1.5-rev2
+*/
+
+#ifndef CONFIGPROGRAM_H
+#define CONFIGPROGRAM_H
+
 int getPower_ACFan, getPower_ACHeater;
 int callback_2 = 0;
 int callback_3 = 0;
@@ -12,3 +19,5 @@ unsigned long waktuSebelum_2 = 0;
 unsigned long currentTimeReset = 0;
 unsigned long currentTimeLED_start = 0;
 unsigned long currentTimeLED_end = 0;
+
+#endif

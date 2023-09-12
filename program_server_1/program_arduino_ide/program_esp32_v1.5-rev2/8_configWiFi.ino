@@ -11,11 +11,11 @@ void initWiFi()
   ipAddress = WiFi.localIP().toString().c_str();
 }
 
-
-// New Menthod : Reconnecting WiFi AP Server
+// New Method : Reconnecting WiFi AP Server
 void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info) 
 {
   Serial.println(F("Connected to AP Successfully!"));
+  selfReset = 0;
 }
 
 void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info) 
@@ -43,8 +43,11 @@ void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info)
     previous_time = current_time;
   }
 }
+/*! @file 8_configWiFi.ino
+ * @version 1.5-rev2
+*/
 
-// Old Menthod : Reconnecting WiFi AP Server
+// Old Method : Reconnecting WiFi AP Server
 void reconnectWiFi() 
 {
   unsigned long current_time = millis(); // number of milliseconds since the upload

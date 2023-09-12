@@ -1,6 +1,10 @@
-//***********************************************************************
-// Support functions for Fuzzy Inference System                          
-//***********************************************************************
+/*! @file 11_programFuzzy.ino
+ * @version 1.5-rev2
+ ***********************************************************************
+ * Support functions for Fuzzy Inference System                          
+ ***********************************************************************
+*/
+
 // Triangular Member Function
 FIS_TYPE fis_trimf(FIS_TYPE x, FIS_TYPE* p) {
   FIS_TYPE a = p[0], b = p[1], c = p[2];

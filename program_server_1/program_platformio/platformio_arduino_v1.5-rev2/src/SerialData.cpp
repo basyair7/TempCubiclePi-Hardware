@@ -1,3 +1,6 @@
+/*! @file serialData.cpp
+ * @version 1.5-rev2
+*/
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include "configProgram.h"

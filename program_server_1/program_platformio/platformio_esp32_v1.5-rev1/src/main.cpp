@@ -1,10 +1,13 @@
-/* 
+/*! @file main.cpp
+ * @version 1.5-rev2
+ * @mainpage
  * Program Pengambilan dan Mengirim data ESP32 ke server Raspberry Pi (Web Server Local) (PlatformIO)
+ * @section
  * Version : 1.5-rev2
  * NAMA    : FATHUL BASYAIR
  * NPM     : 1904105010004
  * PRODI   : TEKNIK ELEKTRO (BIDANG TEKNIK TENAGA LISTRIK)
- */
+*/
 
 #include <Arduino.h>
 #include <DHT.h>
@@ -35,6 +38,7 @@ bool stateFuzzy = true;
 
 // BuzzerState Main
 int BuzzerState = HIGH;
+bool buzzerSwitch = true;
 
 // Sensor PZEM-004T Object
 #if defined(ESP32)
@@ -45,7 +49,6 @@ PZEM004Tv30 pzem(Serial2);
 DATAPZEM datapzem;
 
 // Sensor DHT Object
-#define DHTTYPE   DHT21
 DHT dht(pinDHT, DHTTYPE);
 DATADHT datadht;
 
@@ -61,8 +64,10 @@ void setup() {
   
   // Cek kondisi fuzzy dinonaktifkan atau tidak
   int stateFuzzySwitch = EEPROM.read(0);
+  int stateBuzzerSwitch = EEPROM.read(1);
   if(stateFuzzySwitch == 0) stateFuzzy = false;
-
+  if(stateBuzzerSwitch == 0) buzzerSwitch = false;
+  
   // pasang konfigurasi WiFi ESP32 yang baru
   // cek reconnectWiFi jika wifi esp32 terputus
   WiFi.onEvent(WiFiStationConnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED);
@@ -88,4 +93,5 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   funcMain();
+  server.handleClient();
 }

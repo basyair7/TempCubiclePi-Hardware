@@ -1,4 +1,9 @@
+/*! @file 6_uploadData.cpp
+ * @version 1.5-rev2
+*/
+
 #include <Arduino.h>
+#include <Wire.h>
 #include <WiFi.h>
 #include <ESPmDNS.h>
 #include <EEPROM.h>
@@ -23,7 +28,8 @@ float temp_input, float hum_input, float dimmerHeater, float fisOutputHeater, fl
 
         // masukan data ke format json
         data_page["kubikel"] = kodekubikel_input;
-        data_page["FISstate"] = (stateFuzzy == true ? "enable" : "disable");
+        data_page["fuzzy"] = (stateFuzzy == true ? "enable" : "disable");
+        data_page["buzzer"] = (buzzerSwitch == true ? "enable" : "disable");
         data_page["data_pzem"]["tegangan_heater"] = tegangan_input;
         data_page["data_pzem"]["arus_heater"] = arus_input;
         data_page["data_pzem"]["daya_heater"] = daya_input;
@@ -93,7 +99,7 @@ void server_setup(void) {
     // reset pzem page
     server.on("/resetpzem", []() {
         resetpzem();
-        page = "{\"pzem_state\": \""+String(0)+"\", \"reason\": \""+String("pzem energy has restarted....")+"\"}";
+        page = "{\"pzem_state\": \""+String(1)+"\", \"reason\": \""+String("pzem energy has restarted....")+"\"}";
         server.send(200, "text/plain", page);
         delay(20);
         page = "";
@@ -101,7 +107,7 @@ void server_setup(void) {
 
     // reset server
     server.on("/resetesp", []() {
-        page = "{\"esp_state\": \""+String(0)+"\", \"reason\": \""+String("esp32 board has restarted....")+"\"}";
+        page = "{\"esp_state\": \""+String(1)+"\", \"reason\": \""+String("esp32 board has restarted....")+"\"}";
         server.send(200, "text/plain", page);
         buzzer_shutdown(pin_buzzer);
         delay(1000);
@@ -128,19 +134,54 @@ void server_setup(void) {
         page = ""; 
     });
 
+    // disable buzzer speaker
+    server.on("/disablebuzzer", []() {
+        page = "{\"buzzer_state\": \""+String(0)+"\", \"reason\": \""+String("buzzer speaker has been disable....")+"\"}";
+        server.send(200, "text/plain", page);
+        buzzerSwitch = false;
+        EEPROM.write(1, 0);
+        EEPROM.commit();
+        page = "";
+    });
+
+    // enable buzzer speaker
+    server.on("/enablebuzzer", []() {
+        page = "{\"buzzer_state\": \""+String(1)+"\", \"reason\": \""+String("buzzer speaker has been enable....")+"\"}";
+        server.send(200, "text/plain", page);
+        buzzerSwitch = true;
+        EEPROM.write(1, 1);
+        EEPROM.commit();
+        page = ""; 
+    });
+    
+    // help configurate
+    server.on("/help", []() {
+        String helpPage = "Helper Page\n\n";
+        helpPage += "TCP server started : ";
+        helpPage += String(ipAddress)+"/"+String(kodekubikel)+"\n";
+        helpPage += "\n1. Reset PZEM on Server : ";
+        helpPage += String(ipAddress)+"/resetpzem";
+        helpPage += "\n2. Reset Hardware on Server : ";
+        helpPage += String(ipAddress)+"/resetesp";
+        helpPage += "\n3. Disable Program Fuzzy : ";
+        helpPage += String(ipAddress)+"/disablefuzzy";
+        helpPage += "\n4. Enable Program Fuzzy : ";
+        helpPage += String(ipAddress)+"/enablefuzzy";
+        helpPage += "\n5. Disable Buzzer Speaker : ";
+        helpPage += String(ipAddress)+"/disablebuzzer";
+        helpPage += "\n6. Enable Buzzer Speaker : ";
+        helpPage += String(ipAddress)+"/enablebuzzer";
+
+        server.send(200, "text/plain", helpPage);
+    });
+
     // Start TCP (HTTP) server
     server.begin();
     server.onNotFound(handleNotFound);
     Serial.print(F("TCP server started : "));
-    Serial.println(String(ipAddress)+"/"+String(kodekubikel));
-    Serial.print(F("Reset PZEM on Server : "));
-    Serial.println(String(ipAddress)+"/resetpzem");
-    Serial.print(F("Reset Hardware on Server : "));
-    Serial.println(String(ipAddress)+"/resetesp"); 
-    Serial.print(F("Disable Program Fuzzy : "));
-    Serial.println(String(ipAddress)+"/disablefuzzy");
-    Serial.print(F("Enable Program Fuzzy : "));
-    Serial.println(String(ipAddress)+"/enablefuzzy");
+    Serial.println(String(ipAddress)+"/"+String(kodekubikel)+"\n");
+    Serial.print(F("Help Page : "));
+    Serial.println(String(ipAddress)+"/help");
 
     // Add service to MDNS-SD
     MDNS.addService("http", "tcp", 80);

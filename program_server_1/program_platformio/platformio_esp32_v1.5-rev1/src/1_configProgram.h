@@ -1,4 +1,9 @@
+/*! @file 1_configProgram.h
+ * @version 1.5-rev2
+*/
+
 #include <Arduino.h>
+#include <Wire.h>
 #include <DHT.h>
 #include <PZEM004Tv30.h>
 #include <SoftwareSerial.h>
@@ -6,8 +11,8 @@
 
 // setting find WiFi Hotspot
 #ifndef STASSID
-#define STASSID "Private"
-#define STAPSK "Rumahmiruk_37"
+#define STASSID "@Wifi.com"
+#define STAPSK "Hostpot_ahul7"
 extern const char* ssid;
 extern const char* password;
 extern String ipAddress;
@@ -34,6 +39,7 @@ extern int callback_4;
 // Pinout Buzzer
 #define pin_buzzer  22
 extern int BuzzerState;
+extern bool buzzerSwitch;
 
 // Pinout Serial Data Sensor PZEM-004T
 #define RXD2        16
@@ -41,6 +47,7 @@ extern int BuzzerState;
 
 // Pinout Sensor DHT
 #define pinDHT      4
+#define DHTTYPE   DHT21
 
 // EEPROM_SIZE Baudrate
 #define EEPROM_SIZE 125
@@ -128,11 +135,14 @@ extern DATAPZEM datapzem;
 extern WebServer server;
 extern String page;
 
-//***********************************************************************
-// Matlab .fis to arduino C converter v2.0.1.25122016                   
-// - Karthik Nadig, USA                                                  
-// Please report bugs to: karthiknadig@gmail.com                         
-//***********************************************************************
+/*! @typedef 11_programFuzzy.cpp
+ * @details
+ ***********************************************************************
+ * Matlab .fis to arduino C converter v2.0.1.25122016                   
+ * - Karthik Nadig, USA                                                  
+ * Please report bugs to: karthiknadig@gmail.com                         
+ ***********************************************************************
+*/
 #define FIS_TYPE float
 #define FIS_RESOLUSION 101
 #define FIS_MIN -3.4028235E+38

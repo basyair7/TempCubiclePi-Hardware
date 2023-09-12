@@ -1,3 +1,7 @@
+/*! @file 7_serialMonitor.cpp
+ * @version 1.5-rev2
+*/
+
 #include <Arduino.h>
 #include "1_configProgram.h"
 

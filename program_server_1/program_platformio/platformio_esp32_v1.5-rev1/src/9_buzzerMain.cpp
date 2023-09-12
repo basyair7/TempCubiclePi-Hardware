@@ -1,9 +1,13 @@
-/*
-Connect a piezo buzzer or speaker to pin 11 or select a new pin.
+/*! @file 9_buzzerMain.cpp
+ * @version 1.5-rev2
+  
+  @section
+  Connect a piezo buzzer or speaker to pin 11 or select a new pin.
   More songs available at https://github.com/robsoncouto/arduino-songs                                            
-                                              
-                                              Robson Couto, 2019
+                                            
+  Robson Couto, 2019
 */
+
 #include <Arduino.h>
 #include "1_configProgram.h"
 
@@ -150,30 +154,30 @@ void noTone(byte pin) {
 
 // program buzzer main
 void buzzer_main(byte buzzerPin, int STATE) {
-    if (STATE == HIGH) {
-        tone(buzzerPin, 1000, 20);
-    }
-    if (STATE == LOW) {
-        noTone(buzzerPin);
-    }
+  if(buzzerSwitch == true) {
+    if (STATE == HIGH) tone(buzzerPin, 1000, 20);
+    if (STATE == LOW) noTone(buzzerPin);
+  } else {
+    noTone(buzzerPin);
+  }
 }
 
 // program buzzer error
 void buzzer_error(byte buzzerPin, long millisMain, long interval) 
 {
-    if(BuzzerState == HIGH) {
-        if((unsigned long) (millisMain - waktuSebelum_playBuzzer) >= interval) {
-            waktuSebelum_playBuzzer = millisMain;
-            BuzzerState = LOW;
-        }
+  if(BuzzerState == HIGH) {
+    if((unsigned long) (millisMain - waktuSebelum_playBuzzer) >= interval) {
+      waktuSebelum_playBuzzer = millisMain;
+      BuzzerState = LOW;
     }
-    else {
-        if((unsigned long) (millisMain - waktuSebelum_playBuzzer) >= interval) {
-            waktuSebelum_playBuzzer = millisMain;
-            BuzzerState = HIGH;
-        }
+  }
+  else {
+    if((unsigned long) (millisMain - waktuSebelum_playBuzzer) >= interval) {
+      waktuSebelum_playBuzzer = millisMain;
+      BuzzerState = HIGH;
     }
-    buzzer_main(buzzerPin, BuzzerState);
+  }
+  buzzer_main(buzzerPin, BuzzerState);
 }
 
 // program buzzer startup

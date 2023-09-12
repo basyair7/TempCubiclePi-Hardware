@@ -1,3 +1,7 @@
+/*! @file 5_programDHT.cpp 
+ * @version 1.5-rev2
+*/
+
 #include <Arduino.h>
 #include "1_configProgram.h"
 

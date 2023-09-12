@@ -1,8 +1,9 @@
-/*
-Connect a piezo buzzer or speaker to pin 11 or select a new pin.
-  More songs available at https://github.com/robsoncouto/arduino-songs                                            
-                                              
-                                              Robson Couto, 2019
+/*! @file 9_buzzerMain.ino
+ * @details
+ * Connect a piezo buzzer or speaker to pin 11 or select a new pin.
+ * More songs available at https://github.com/robsoncouto/arduino-songs         
+ *
+ * Robson Couto, 2019
 */
 
 #define NOTE_B0  31
@@ -145,6 +146,21 @@ void noTone(byte pin) {
   tone(playing, 0, 0);
 }
 
+// program buzzer main
+void buzzer_main(byte buzzerPin, int STATE) {
+  if(buzzerSwitch == true) {
+    if (STATE == HIGH) {
+      tone(buzzerPin, 1000, 20);
+    }
+    if (STATE == LOW) {
+      noTone(buzzerPin);
+    }
+  }
+  else {
+    noTone(buzzerPin);
+  }
+}
+
 // program buzzer error
 void buzzer_error(byte buzzerPin, long millisMain, long interval){
   if (BuzzerState == HIGH) {
@@ -160,16 +176,6 @@ void buzzer_error(byte buzzerPin, long millisMain, long interval){
     }
   }
   buzzer_main(buzzerPin, BuzzerState); 
-}
-
-// program buzzer main
-void buzzer_main(byte buzzerPin, int STATE) {
-  if (STATE == HIGH) {
-    tone(buzzerPin, 1000, 20);
-  }
-  if (STATE == LOW) {
-    noTone(buzzerPin);
-  }
 }
 
 // program buzzer startup

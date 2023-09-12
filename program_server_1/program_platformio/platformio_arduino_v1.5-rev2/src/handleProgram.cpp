@@ -1,3 +1,7 @@
+/*! @file handleProgram.cpp
+ * @version 1.5-rev2
+*/
+
 #include <Arduino.h>
 #include "configProgram.h"
 

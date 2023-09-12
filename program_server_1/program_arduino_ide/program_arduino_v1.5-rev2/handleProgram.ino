@@ -1,5 +1,14 @@
+/*! @file handleProgram.ino
+ * @version 1.5-rev2
+*/
+
 void (* resetFunc) (void) = 0; // declare reset function at address 0
 int i = 0;
+
+// create ledInit function
+void ledInit(byte ledPin, int STATE) {
+  digitalWrite(ledPin, STATE);
+}
 
 // create ledError function
 void ledError(byte ledPin, long millisMain, long interval_start, long interval_end) {
@@ -17,11 +26,6 @@ void ledError(byte ledPin, long millisMain, long interval_start, long interval_e
     }
   }
   ledInit(ledPin, LedState);
-}
-
-// create ledInit function
-void ledInit(byte ledPin, int STATE) {
-  digitalWrite(ledPin, STATE);
 }
 
 // create atmegaReset function

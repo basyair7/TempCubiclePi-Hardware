@@ -1,10 +1,13 @@
-/* 
- * Program proses fuzzifikasi modul dimmer
- * Version : 1.5-rev2
+/*! @file program_arduino_v1.5-rev2.ino
+ * @version 1.5-rev2
+ * @mainpage
+ * Program proses fuzzifikasi modul dimmer (Arduino IDE)
+ * @section
+ * VERSION : 1.5-rev2
  * NAMA    : FATHUL BASYAIR
  * NPM     : 1904105010004
  * PRODI   : TEKNIK ELEKTRO (BIDANG TEKNIK TENAGA LISTRIK)
- */
+*/
 
 #include "configProgram.h"
 #include <RBDdimmer.h>
@@ -20,6 +23,15 @@ dimmerLamp dimmerACFan(SignalPin_fan);
 // Pinout LED Indikator
 #define PINLED LED_BUILTIN
 int LedState = HIGH;
+
+void setPowerDimmer(int setPowerHeater, int setPowerFan) {
+  // Set output value: voltage
+  dimmerACHeater.setPower(setPowerHeater);
+  // Set output value: fan
+  dimmerACFan.setPower(setPowerFan);
+  // Set output ledInit : HIGH
+  ledInit(PINLED, HIGH);
+}
 
 // Setup routine runs once when you press reset:
 void setup() {
@@ -57,13 +69,4 @@ void loop() {
       atmegaReset(waktuSekarang, 20000, true);
     }
   }
-}
-
-void setPowerDimmer(int setPowerHeater, int setPowerFan) {
-  // Set output value: voltage
-  dimmerACHeater.setPower(setPowerHeater);
-  // Set output value: fan
-  dimmerACFan.setPower(setPowerFan);
-  // Set output ledInit : HIGH
-  ledInit(PINLED, HIGH);
 }
