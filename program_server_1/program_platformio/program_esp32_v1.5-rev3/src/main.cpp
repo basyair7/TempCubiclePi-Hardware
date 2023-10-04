@@ -101,7 +101,7 @@ void setup() {
   WiFi.onEvent(WiFiStationConnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED);
   WiFi.onEvent(WiFiGotIP, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
   WiFi.onEvent(WiFiStationDisconnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
-
+  
   // create a Task for program 1
   xTaskCreatePinnedToCore(
     program_1, "programMain", 5000, NULL, 1, NULL, ARDUINO_RUNNING_CORE
