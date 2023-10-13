@@ -52,11 +52,6 @@ void funcMain(void) {
         else
             buzzer_main(pin_buzzer, LOW);
         
-        // print_data();
+        // if(WiFi.status() == WL_CONNECTED) print_data();
     }
-}
-
-void funcTest(void) {
-    Serial.println("Hello World!");
-    delay(100);
 }

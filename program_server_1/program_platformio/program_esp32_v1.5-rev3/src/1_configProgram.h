@@ -16,6 +16,7 @@
 extern const char* ssid;
 extern const char* password;
 extern String ipAddress;
+extern String version;
 #endif
 
 #ifndef CONFIGPROGRAM_H
@@ -54,14 +55,14 @@ extern bool buzzerSwitch;
 // deklarasi variabel interval program berjalan
 #define interval_1 50   // 50ms = 0.05 detik => lama waktu mengirim data
 #define interval_2 50   // 50ms = 0.05 detik => lama waktu menerima data
-#define interval_3 2000 // 2000ms for program DHT
+#define interval_3 2500 // 2500ms for program DHT
 #define interval_4 1000 // 1000ms for program PZEM
+#define interval_5 5000 // 5000ms for program Serial Monitor
 #define interval_reconnect 15000 // 15 detik
 #define interval_uploadData 1000 // 1 detik
 
 // deklarasi fungsi program
 // 3_programMain.cpp
-extern void funcTest(void);
 extern void funcMain(void);
 
 // 4_programPZEM.cpp
@@ -84,11 +85,7 @@ extern void server_setup(void);
 extern void print_data(void);
 
 // 8_configWiFi.cpp
-extern void initWiFi(void);
-extern void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info);
-extern void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info);
-extern void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info);
-extern void reconnectWiFi();
+extern void keepWiFiAlive(void* param);
 
 // 9_buzzerMain.cpp
 extern void tone(byte pin, int freq, int d);
