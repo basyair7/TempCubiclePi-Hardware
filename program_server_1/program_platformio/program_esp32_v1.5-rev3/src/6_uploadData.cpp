@@ -45,7 +45,6 @@ float temp_input, float hum_input, float dimmerHeater, float fisOutputHeater, fl
 
         // masukan data ke variabel page
         serializeJson(data_page, page);
-        // delay(30);
         vTaskDelay(30 / portTICK_PERIOD_MS);
         
     }
@@ -88,7 +87,6 @@ void server_setup(void) {
     if (!MDNS.begin("esp32")) {
         Serial.println(F("Error setting up MDNS responder!"));
         while (true) {
-            // delay(1000);
             vTaskDelay(1000 / portTICK_PERIOD_MS);
         }
     }
@@ -103,7 +101,6 @@ void server_setup(void) {
         resetpzem();
         page = "{\"pzem_state\": \""+String(1)+"\", \"reason\": \""+String("pzem energy has restarted....")+"\"}";
         server.send(200, "text/plain", page);
-        // delay(20);
         vTaskDelay(20 / portTICK_PERIOD_MS);
         page = "";
     });
