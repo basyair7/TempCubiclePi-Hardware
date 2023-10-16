@@ -58,7 +58,7 @@ extern bool buzzerSwitch;
 #define interval_3 2500 // 2500ms for program DHT
 #define interval_4 1000 // 1000ms for program PZEM
 #define interval_5 5000 // 5000ms for program Serial Monitor
-#define interval_reconnect 15000 // 15 detik
+#define interval_reconnect 10000 // 15 detik
 #define interval_uploadData 1000 // 1 detik
 
 // deklarasi fungsi program
@@ -85,7 +85,12 @@ extern void server_setup(void);
 extern void print_data(void);
 
 // 8_configWiFi.cpp
-extern void keepWiFiAlive(void* param);
+// extern void keepWiFiAlive(void* param);
+extern void initWiFi(void);
+extern void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info);
+extern void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info);
+extern void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info);
+extern void reconnectWiFi();
 
 // 9_buzzerMain.cpp
 extern void tone(byte pin, int freq, int d);

@@ -18,8 +18,7 @@ void initWiFi()
     Serial.println(F("Connecting to WiFi..."));
     while (WiFi.status() != WL_CONNECTED) {
         Serial.print(F("."));
-        // delay(1000);
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        delay(1000);
     }
     ipAddress = WiFi.localIP().toString().c_str();
 }

@@ -68,6 +68,23 @@ void program_1(void* parameter) {
   }
 }
 
+void program_2(void* parameter) {
+  // Install the latest ESP32 WiFi Configuration
+  // Check WiFi reconnect if ESP32 WiFi network is disconnected
+  WiFi.onEvent(WiFiStationConnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED);
+  WiFi.onEvent(WiFiGotIP, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
+  WiFi.onEvent(WiFiStationDisconnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
+  // initialize ESP32 WiFi Server
+  initWiFi();
+  Serial.print(F("ESP32 NEW HOSTNAME : "));
+  Serial.println(WiFi.getHostname());
+  server_setup();
+  // run repeatedly server.handleClient() if WiFi network ready
+  while(true) {
+    server.handleClient();
+  }
+}
+
 void setup() {
   // put your setup code here, to run once:
   // Initialize serial communication with a baudrate of 9600 bits per seconds (bps)
@@ -89,12 +106,12 @@ void setup() {
   
   // create a Task for program 1
   xTaskCreatePinnedToCore(
-    program_1, "programMain", 5000, NULL, 1, NULL, CONFIG_ARDUINO_RUNNING_CORE
+    program_1, "funcMain", 8124, NULL, 1, NULL, 0
   );
   
   // create a Task for program 2
   xTaskCreatePinnedToCore(
-    keepWiFiAlive, "WebServer", 5000, NULL, 2, NULL, CONFIG_ARDUINO_RUNNING_CORE
+    program_2, "WiFi", 8124, NULL, 2, NULL, 1
   );
   
 }

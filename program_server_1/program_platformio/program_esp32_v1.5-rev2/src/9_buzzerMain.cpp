@@ -144,8 +144,7 @@ void tone(byte pin, int freq, int d) {
   ledcAttachPin(pin, 0); // attach beeper
   ledcWriteTone(0, freq); // play tone
   playing = pin; // store pin
-  // delay(d);
-  vTaskDelay(pdMS_TO_TICKS(d));
+  delay(d);
 }
 void noTone(byte pin) {
   tone(playing, 0, 0);
@@ -201,8 +200,7 @@ void buzzer_startup(byte buzzer) {
     tone(buzzer, melody_1[thisNote], noteDuration_1*0.9);
 
     // Wait for the specief duration before playing the next note.
-    // delay(noteDuration_1);
-    vTaskDelay(pdMS_TO_TICKS(noteDuration_1));
+    delay(noteDuration_1);
     
     // stop the waveform generation before the next note.
     noTone(buzzer);
@@ -227,8 +225,7 @@ void buzzer_shutdown(byte buzzer) {
     tone(buzzer, melody_2[thisNote], noteDuration_2*0.9);
 
     // Wait for the specief duration before playing the next note.
-    // delay(noteDuration_2);
-    vTaskDelay(pdMS_TO_TICKS(noteDuration_2));
+    delay(noteDuration_2);
 
     // Stop the wavefrom generation before the next note.
     noTone(buzzer);

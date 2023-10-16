@@ -52,6 +52,6 @@ void funcMain(void) {
         else
             buzzer_main(pin_buzzer, LOW);
         
-        // if(WiFi.status() == WL_CONNECTED) print_data();
+        print_data();
     }
 }
