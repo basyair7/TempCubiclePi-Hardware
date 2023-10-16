@@ -85,7 +85,6 @@ extern void server_setup(void);
 extern void print_data(void);
 
 // 8_configWiFi.cpp
-// extern void keepWiFiAlive(void* param);
 extern void initWiFi(void);
 extern void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info);
 extern void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info);
