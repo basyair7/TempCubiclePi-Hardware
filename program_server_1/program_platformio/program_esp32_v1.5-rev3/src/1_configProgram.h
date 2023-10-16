@@ -57,7 +57,7 @@ extern bool buzzerSwitch;
 #define interval_2 50   // 50ms = 0.05 detik => lama waktu menerima data
 #define interval_3 2500 // 2500ms for program DHT
 #define interval_4 1000 // 1000ms for program PZEM
-#define interval_5 5000 // 5000ms for program Serial Monitor
+#define interval_5 1000 // 1000ms for program Serial Monitor
 #define interval_reconnect 10000 // 15 detik
 #define interval_uploadData 1000 // 1 detik
 
