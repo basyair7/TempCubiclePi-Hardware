@@ -1,0 +1,82 @@
+#include <WiFi.h>
+#include <WebServer.h>
+#include <SPIFFS.h>
+#include <ArduinoJson.h>
+
+const char* ssid = "ESP32-AP";
+const char* password = "your_password";
+
+WebServer server(80);
+DynamicJsonDocument config(1024); // Ukuran yang cukup besar untuk menyimpan konfigurasi
+
+void setup() {
+    Serial.begin(115200);
+    SPIFFS.begin();
+
+    // Coba memuat konfigurasi dari file JSON
+    if (loadConfig()) {
+        // Jika konfigurasi berhasil dimuat, coba menghubungkan ke WiFi
+        WiFi.begin(config["ssid"].as<char*>(), config["password"].as<char*>());
+        while (WiFi.status() != WL_CONNECTED) {
+            delay(1000);
+            Serial.println("Connecting to WiFi...");
+        }
+    } else {
+        // Jika konfigurasi tidak ada atau gagal dimuat, buat WiFi AP
+        WiFi.softAP(ssid, password);
+    }
+
+    server.on("/", HTTP_GET, [](void *arg) {
+        String html = "<html><body><h1>WiFi Configuration</h1>";
+        html += "<form method='POST' action='/save'>";
+        html += "SSID: <input type='text' name='ssid'><br>";
+        html += "Password: <input type='password' name='password'><br>";
+        html += "<input type='submit' value='Save'></form></body></html>";
+        server.send(200, "text/html", html);
+    });
+
+    server.on("/save", HTTP_POST, []() {
+        String new_ssid = server.arg("ssid");
+        String new_password = server.arg("password");
+
+        // Simpan konfigurasi WiFi ke dalam file JSON
+        config["ssid"] = new_ssid;
+        config["password"] = new_password;
+        saveConfig();
+
+        server.send(200, "text/plain", "WiFi credentials saved!");
+    });
+
+    server.begin();
+}
+
+void loop() {
+    server.handleClient();
+}
+
+void saveConfig() {
+    // Simpan konfigurasi WiFi ke dalam file JSON
+    File configFile = SPIFFS.open("/config.json", "w");
+    if (!configFile) {
+        Serial.println("Failed to open config file for writing");
+        return;
+    }
+    serializeJson(config, configFile);
+    configFile.close();
+}
+
+bool loadConfig() {
+    // Coba memuat konfigurasi WiFi dari file JSON
+    File configFile = SPIFFS.open("/config.json", "r");
+    if (!configFile) {
+        Serial.println("Failed to open config file");
+        return false;
+    }
+    DeserializationError error = deserializeJson(config, configFile);
+    configFile.close();
+    if (error) {
+        Serial.println("Failed to read config file");
+        return false;
+    }
+    return true;
+}

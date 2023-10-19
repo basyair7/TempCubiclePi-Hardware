@@ -6,7 +6,6 @@
 #include <Wire.h>
 #include <WiFi.h>
 #include <ESPmDNS.h>
-#include <EEPROM.h>
 #include <WebServer.h>
 #include <WiFiClient.h>
 #include <HTTPUpdateServer.h>
@@ -15,6 +14,7 @@
 
 // buat fungsi mengirim data
 unsigned long waktuSebelum_uploadData = 0;
+bool mDNSESPReady = false;
 
 void send_data(String kodekubikel_input, 
 float tegangan_input, float arus_input, float daya_input, float pF_input, float energy_input, float freq_input,
@@ -84,17 +84,23 @@ void server_setup(void) {
     //   the fully-qualified domain name is "esp32.local"
     // - second argument is the IP address to advertise
     //   we send our IP address on the WiFi network
-    if (!MDNS.begin("esp32")) {
+    if (!MDNS.begin("esp32-webupdate")) {
         Serial.println(F("Error setting up MDNS responder!"));
         while (true) {
             vTaskDelay(1000 / portTICK_PERIOD_MS);
         }
     }
+    mDNSESPReady = true;
     Serial.println(F("mDNS responder started"));
 
     // root page
+    server.on("/", []() {
+        server.sendHeader("Location", "http://" + String(ipAddress) + "/help");
+        server.send(303);
+    });
+
     server.on("/" + String(kodekubikel), handleRoot);
-    server.on("/", handleRoot);
+    // server.on("/", handleRoot);
 
     // reset pzem page
     server.on("/resetpzem", []() {
@@ -110,7 +116,7 @@ void server_setup(void) {
         page = "{\"esp_state\": \""+String(1)+"\", \"reason\": \""+String("esp32 board has restarted....")+"\"}";
         server.send(200, "text/plain", page);
         buzzer_shutdown(pin_buzzer);
-        delay(1000);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
         ESP.restart();
     });
 
@@ -119,9 +125,9 @@ void server_setup(void) {
         page = "{\"fuzzy_state\": \""+String(0)+"\", \"reason\": \""+String("fuzzy logic has been disable....")+"\"}";
         server.send(200, "text/plain", page);
         stateFuzzy = false;
-        EEPROM.write(0, 0);
-        EEPROM.commit();
+        saveConfig("fuzzy", false);
         page = "";
+        NotifFuzzy(pin_buzzer, false);
     });
 
     // enable program fuzzy
@@ -129,9 +135,9 @@ void server_setup(void) {
        page = "{\"fuzzy_state\": \""+String(1)+"\", \"reason\": \""+String("fuzzy logic has been enable....")+"\"}";
         server.send(200, "text/plain", page);
         stateFuzzy = true;
-        EEPROM.write(0, 1);
-        EEPROM.commit();
+        saveConfig("fuzzy", true);
         page = ""; 
+        NotifFuzzy(pin_buzzer, true);
     });
 
     // disable buzzer speaker
@@ -139,8 +145,7 @@ void server_setup(void) {
         page = "{\"buzzer_state\": \""+String(0)+"\", \"reason\": \""+String("buzzer speaker has been disable....")+"\"}";
         server.send(200, "text/plain", page);
         buzzerSwitch = false;
-        EEPROM.write(1, 0);
-        EEPROM.commit();
+        saveConfig("buzzer", false);
         page = "";
     });
 
@@ -149,33 +154,73 @@ void server_setup(void) {
         page = "{\"buzzer_state\": \""+String(1)+"\", \"reason\": \""+String("buzzer speaker has been enable....")+"\"}";
         server.send(200, "text/plain", page);
         buzzerSwitch = true;
-        EEPROM.write(1, 1);
-        EEPROM.commit();
+        saveConfig("buzzer", true);
         page = ""; 
+        NotifBuzzer(pin_buzzer);
     });
-    
+
+    // config WiFi server
+    server.on("/config-wifi", HTTP_GET, []() {
+        String html = "<!DOCTYPE>\r\n<html>\r\n<head>\r\n<meta charset='utf-8'>\r\n<meta name='viewport' content='width=device-width, initial-scale=1.0'>\r\n";
+        html += "<meta name='description' content='configWiFi'>\r\n<meta name='author' content='PHPGurukul'>\r\n";
+        html += "<title>WiFi Configuration - TempCubiclePi</title>\r\n</head>\r\n";
+        html += "<body>\r\n<h4>WiFi Configuration - TempCubiclePi v1.5-rev3</h4>\r\n";
+        html += "<p><b> SSID : </b> " + String(loadSSID()) + "</p> \r\n";
+        html += "<p><b> Password : </b> "+ String(loadPassword()) + "</p> \r\n";
+        html += "<form method='POST' action='/config-wifi-save'>\r\n";
+        html += "<p>SSID: </p> <input type='text' name='newssid'><br>\r\n";
+        html += "<p>Password: </p> <input type='password' name='newpassword'><br><br>\r\n";
+        html += "<button type='submit' value='save'>Save</button>\r\n";
+        html += "</form>\r\n</body>\r\n</html>";
+        server.send(200, "text/html", html);
+    });
+
+    // save new wifi configuration
+    server.on("/config-wifi-save", HTTP_POST, []() {
+        String new_ssid = server.arg("newssid");
+        String new_password = server.arg("newpassword");
+
+        // save to configWifi.json
+        saveConfigWiFi(new_ssid, new_password);
+
+        String html = "<!DOCTYPE html>\r\n<html>\r\n<head>\r\n<meta charset='utf-8'>\r\n<meta name='viewport' content='width=device-width, initial-scale=1.0'>\r\n";
+        html += "<meta name='description' content='configWiFi'>\r\n<meta name='author' content='PHPGurukul'>\r\n";
+        html += "<title>WiFi Configuration - TempCubiclePi v1.5-rev3</title>\r\n</head>\r\n";
+        html += "<body>\r\n<h4>WiFi Configuration - TempCubiclePi v1.5-rev3</h4>\r\n";
+        html += "<h6> Data telah di simpan </h6>\r\n";
+        html += "<p> WiFi SSID : " + String(new_ssid) + "</p>\r\n";
+        html += "<p> Password : " + String(new_password) + "</p>\r\n";
+        html += "<a href=http://"+String(ipAddress)+"/help>Kembali ke Menu</a>\r\n";
+        html += "</body>\r\n</html>";
+        server.send(200, "text/html", html);
+    });
+
     // help configurate
     server.on("/help", []() {
-        String helpPage = "Helper Page\n\n";
-        helpPage += "TCP server started : ";
-        helpPage += String(ipAddress)+"/"+String(kodekubikel)+"\n";
-        helpPage += "\n1. Reset PZEM on Server : ";
-        helpPage += String(ipAddress)+"/resetpzem";
-        helpPage += "\n2. Reset Hardware on Server : ";
-        helpPage += String(ipAddress)+"/resetesp";
-        helpPage += "\n3. Disable Program Fuzzy : ";
-        helpPage += String(ipAddress)+"/disablefuzzy";
-        helpPage += "\n4. Enable Program Fuzzy : ";
-        helpPage += String(ipAddress)+"/enablefuzzy";
-        helpPage += "\n5. Disable Buzzer Speaker : ";
-        helpPage += String(ipAddress)+"/disablebuzzer";
-        helpPage += "\n6. Enable Buzzer Speaker : ";
-        helpPage += String(ipAddress)+"/enablebuzzer";
+        String helpPage = "<!DOCTYPE html>\r\n<html>\r\n<head>\r\n<meta charset='utf-8'>\r\n<meta name='viewport' content='width=device-width, initial-scale=1.0'>\r\n";
+        helpPage += "<meta name='description' content='configWiFi'>\r\n<meta name='author' content='PHPGurukul'>\r\n";
+        helpPage += "<title>Helper Page - TempCubiclePi v1.5-rev3</title>\r\n</head>\r\n";
+        helpPage += "<body>\r\n<h4>TCP server started : </h4>";
+        helpPage += "<p><a href=http://"+ String(ipAddress) +"/"+ String(kodekubikel) +"> IPAddress : " + String(ipAddress) + "/" + String(kodekubikel) + "</a></p>\r\n";
+        helpPage += "<p>1. Reset PZEM on Server : <a href=http://"+ String(ipAddress) + "/resetpzem>http://"+ String(ipAddress) + "/resetpzem</a></p>\r\n";
+        helpPage += "<p>2. Reset Hardware on Server : <a href=http://"+ String(ipAddress) + "/resetesp>http://"+ String(ipAddress) + "/resetesp</a></p>\r\n";
+        helpPage += "<p>3. Disable Program Fuzzy : <a href=http://"+ String(ipAddress) + "/disablefuzzy>http://"+ String(ipAddress) + "/disablefuzzy</a></p>\r\n";
+        helpPage += "<p>4. Enable Program Fuzzy : <a href=http://"+ String(ipAddress) + "/enablefuzzy>http://"+ String(ipAddress) + "/enablefuzzy</a></p>\r\n";
+        helpPage += "<p>5. Disable Buzzer Speaker : <a href=http://"+ String(ipAddress) + "/disablebuzzer>http://"+ String(ipAddress) + "/disablebuzzer</a></p>\r\n";
+        helpPage += "<p>6. Enable Buzzer Speaker : <a href=http://"+ String(ipAddress) + "/enablebuzzer>http://"+ String(ipAddress) + "/enablebuzzer</a></p>\r\n";
+        helpPage += "<p>7. Enable Auto Change Mode WiFi : Coming Soon </p>";
+        helpPage += "<p>8. Disable Auto Change Mode WiFi : Coming Soon </p>";
+        helpPage += "<p>9. Configuration WiFi : <a href=http://"+ String(ipAddress) + "/config-wifi>http://"+ String(ipAddress) + "/config-wifi</a></p>\r\n";
+        helpPage += "<br><p><b>Powered by : <a href=https://github.com/basyair7 target='_blank'>Basyair7</a></b></p>\r\n";
+        helpPage += "</body>\r\n</html>";
 
-        server.send(200, "text/plain", helpPage);
+        server.send(200, "text/html", helpPage);
     });
 
+
+
     // Start TCP (HTTP) server
+    httpUpdater.setup(&server);
     server.begin();
     server.onNotFound(handleNotFound);
     Serial.print(F("TCP server started : "));

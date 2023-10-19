@@ -3,6 +3,7 @@
 */
 
 #include <Arduino.h>
+#include <WiFi.h>
 #include "1_configProgram.h"
 
 unsigned long currentTimeMain = 0;
@@ -11,9 +12,9 @@ void print_data(void) {
   if((unsigned long) (millis() - currentTimeMain) >= interval_5) {
     Serial.println(F("\nControl Voltage Fan Exhaust & Heater"));
     Serial.println(F("******************************************************"));
-    Serial.print(F("IP Address           : ")); 
-    Serial.print(ipAddress != "" ? "http://" + String(ipAddress) : " "); 
-    Serial.println(F(ipAddress != "" ? "/help" : "No WiFi Connection"));
+    Serial.print(F("IP Address           : "));
+    Serial.print((ipAddress != "" && WiFi.status() == WL_CONNECTED) || WiFi.getMode() == WIFI_AP ? "http://" + String(ipAddress) : ""); 
+    Serial.println(F((ipAddress != "" && WiFi.status() == WL_CONNECTED) || WiFi.getMode() == WIFI_AP ? "/help" : "No WiFi Connection"));
     
     Serial.print(F("Temperature          : ")); Serial.print(datadht.temperature); Serial.println(F("*C"));
     Serial.print(F("Humidity             : ")); Serial.print(datadht.humidity); Serial.println(F("%"));
