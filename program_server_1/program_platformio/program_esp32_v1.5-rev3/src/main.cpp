@@ -87,11 +87,6 @@ void program_1(void* parameter) {
 // create a program 2 for the WiFi Connection program
 void program_2(void* parameter) {
   (void) parameter;
-  // // Install the latest ESP32 WiFi Configuration
-  // // Check WiFi reconnect if ESP32 WiFi network is disconnected
-  // WiFi.onEvent(WiFiStationConnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED);
-  // WiFi.onEvent(WiFiGotIP, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
-  // WiFi.onEvent(WiFiStationDisconnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
   // initialize ESP32 WiFi Server
   initWiFi();
   Serial.print(F("ESP32 NEW HOSTNAME : "));

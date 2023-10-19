@@ -32,56 +32,7 @@ void initWiFi()
     }
 }
 
-// New Method : Reconnecting WiFi AP Server
-void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info)
-{
-    Serial.println(F("Connected to AP Successfully!"));
-    selfReset = 0;
-}
-
-void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info)
-{
-    ipAddress = WiFi.localIP().toString().c_str();
-    Serial.println(F("WiFi Connected"));
-    Serial.print(F("IP Address : "));
-    Serial.println(ipAddress);
-}
-
-void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info)
-{
-    unsigned long current_time = millis();
-    if ((WiFi.status() != WL_CONNECTED) && (current_time - previous_time >= interval_reconnect))
-    {
-        Serial.println(F("Disconnected from WiFi Access Point"));
-        Serial.print(F("WiFi lost connection, Reason "));
-        Serial.println(info.wifi_sta_disconnected.reason);
-        Serial.println(F("Trying to Reconnect"));
-        WiFi.begin(ssid, password);
-        tone(pin_buzzer, 500, 100);
-        tone(pin_buzzer, 2000, 20);
-        noTone(pin_buzzer);
-
-        // if(changeMode > 3) {
-        //     EEPROM.write(2, 0);
-        //     EEPROM.commit();
-        //     vTaskDelay(100 / portTICK_PERIOD_MS);
-        // }
-        
-        // if(previous_time > 1800000) {
-        //     changeMode++;
-        //     EEPROM.write(3, changeMode);
-        //     EEPROM.commit();
-        //     vTaskDelay(100 / portTICK_PERIOD_MS);
-        //     buzzer_shutdown(pin_buzzer);
-        //     ESP.restart();
-        // }
-
-        previous_time = current_time;
-    }
-    vTaskDelay(100 / portTICK_PERIOD_MS);
-}
-
-// Old Method : Reconnecting WiFi AP Server
+// Reconnecting WiFi AP Server
 void reconnectWiFi()
 {
     unsigned long current_time = millis(); // number of milliseconds since the upload
