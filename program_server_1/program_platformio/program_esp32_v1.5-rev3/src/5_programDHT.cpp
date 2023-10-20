@@ -4,6 +4,12 @@
 
 #include <Arduino.h>
 #include "1_configProgram.h"
+#include <DHT.h>
+
+// Sensor DHT Object
+#define DHTTYPE   DHT21
+DHT dht(pinDHT, DHTTYPE);
+DATADHT datadht;
 
 // membuat program dht
 float temperature(void)

@@ -112,12 +112,10 @@ void server_setup(void) {
     });
 
     // reset server
-    server.on("/resetesp", []() {
-        page = "{\"esp_state\": \""+String(1)+"\", \"reason\": \""+String("esp32 board has restarted....")+"\"}";
+    server.on("/restarthardware", []() {
+        page = "{\"restart_state\": \""+String(1)+"\", \"reason\": \""+String("Server ")+ String(kodekubikel) +String(" has restarted....")+"\"}";
         server.send(200, "text/plain", page);
-        buzzer_shutdown(pin_buzzer);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-        ESP.restart();
+        restartESP();
     });
 
     // disable program fuzzy
@@ -161,18 +159,33 @@ void server_setup(void) {
 
     // config WiFi server
     server.on("/config-wifi", HTTP_GET, []() {
+        bool resetESP = false;
         String html = "<!DOCTYPE>\r\n<html>\r\n<head>\r\n<meta charset='utf-8'>\r\n<meta name='viewport' content='width=device-width, initial-scale=1.0'>\r\n";
         html += "<meta name='description' content='configWiFi'>\r\n<meta name='author' content='PHPGurukul'>\r\n";
-        html += "<title>WiFi Configuration - TempCubiclePi</title>\r\n</head>\r\n";
-        html += "<body>\r\n<h4>WiFi Configuration - TempCubiclePi v1.5-rev3</h4>\r\n";
-        html += "<p><b> SSID : </b> " + String(loadSSID()) + "</p> \r\n";
-        html += "<p><b> Password : </b> "+ String(loadPassword()) + "</p> \r\n";
-        html += "<form method='POST' action='/config-wifi-save'>\r\n";
-        html += "<p>SSID: </p> <input type='text' name='newssid'><br>\r\n";
-        html += "<p>Password: </p> <input type='password' name='newpassword'><br><br>\r\n";
-        html += "<button type='submit' value='save'>Save</button>\r\n";
-        html += "</form>\r\n</body>\r\n</html>";
+        html += "<title>WiFi Configuration - TempCubiclePi "+String(version)+"</title>\r\n</head>\r\n";
+        html += "<body>\r\n<h4>WiFi Configuration - TempCubiclePi "+String(version)+"</h4>\r\n";
+        if(WiFi.getMode() != WIFI_AP) {
+            html += "<p>Server kubikel " + String(kodekubikel) + " akan di restart dan ganti mode WIFI AP terlebih dahulu...<br /> silahkan koneksikan WiFi : " + String(STASSID) + " dan Password " + String(STAPSK) + "</p>\r\n";
+            html += "<p>Setelah terkoneksi ke WiFi " +String(STASSID)+ ", silahkan klik <a href=http://192.168.4.1 target='_blank'> Helper Page </a></p>\r\n";
+            resetESP = true;
+            saveConfig("changeMode", true);
+            
+        } else {
+            html += "<p><b>Old WiFi Configuration</b></p>\r\n";
+            html += "<p><b> SSID : </b> " + String(loadSSID()) + "</p> \r\n";
+            html += "<p><b> Password : </b> "+ String(loadPassword()) + "</p><br /> \r\n";
+            html += "<form method='POST' action='/config-wifi-save'>\r\n";
+            html += "<p><b>New Configuration : </b></p>\r\n";
+            html += "<p>SSID: <input type='text' name='newssid'></p>\r\n";
+            html += "<p>Password: <input type='password' name='newpassword'></p><br>\r\n";
+            html += "<button type='submit' value='save'>Save</button>\r\n";
+            html += "</form>\r\n";
+        }
+        html += "<br><p><b>Powered by : <a href=https://github.com/basyair7 target='_blank'>Basyair7</a></b></p>\r\n";
+        html += "</body>\r\n</html>";
         server.send(200, "text/html", html);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        if(resetESP) restartESP();
     });
 
     // save new wifi configuration
@@ -182,16 +195,19 @@ void server_setup(void) {
 
         // save to configWifi.json
         saveConfigWiFi(new_ssid, new_password);
+        saveConfig("changeMode", false);
 
         String html = "<!DOCTYPE html>\r\n<html>\r\n<head>\r\n<meta charset='utf-8'>\r\n<meta name='viewport' content='width=device-width, initial-scale=1.0'>\r\n";
         html += "<meta name='description' content='configWiFi'>\r\n<meta name='author' content='PHPGurukul'>\r\n";
-        html += "<title>WiFi Configuration - TempCubiclePi v1.5-rev3</title>\r\n</head>\r\n";
-        html += "<body>\r\n<h4>WiFi Configuration - TempCubiclePi v1.5-rev3</h4>\r\n";
-        html += "<h6> Data telah di simpan </h6>\r\n";
+        html += "<title>WiFi Configuration - TempCubiclePi "+String(version)+"</title>\r\n</head>\r\n";
+        html += "<body>\r\n<h4>WiFi Configuration - TempCubiclePi "+String(version)+"</h4>\r\n";
+        html += "<h4> Data telah di simpan </h4>\r\n";
         html += "<p> WiFi SSID : " + String(new_ssid) + "</p>\r\n";
         html += "<p> Password : " + String(new_password) + "</p>\r\n";
         html += "<a href=http://"+String(ipAddress)+"/help>Kembali ke Menu</a>\r\n";
+        html += "<br><p><b>Powered by : <a href=https://github.com/basyair7 target='_blank'>Basyair7</a></b></p>\r\n";
         html += "</body>\r\n</html>";
+
         server.send(200, "text/html", html);
     });
 
@@ -199,18 +215,20 @@ void server_setup(void) {
     server.on("/help", []() {
         String helpPage = "<!DOCTYPE html>\r\n<html>\r\n<head>\r\n<meta charset='utf-8'>\r\n<meta name='viewport' content='width=device-width, initial-scale=1.0'>\r\n";
         helpPage += "<meta name='description' content='configWiFi'>\r\n<meta name='author' content='PHPGurukul'>\r\n";
-        helpPage += "<title>Helper Page - TempCubiclePi v1.5-rev3</title>\r\n</head>\r\n";
-        helpPage += "<body>\r\n<h4>TCP server started : </h4>";
+        helpPage += "<title>Helper Page - TempCubiclePi "+String(version)+"</title>\r\n</head>\r\n";
+        helpPage += "<body>\r\n<h4>Helper Page - TempCubiclePi "+String(version)+"<br /> TCP server started : </h4>";
         helpPage += "<p><a href=http://"+ String(ipAddress) +"/"+ String(kodekubikel) +"> IPAddress : " + String(ipAddress) + "/" + String(kodekubikel) + "</a></p>\r\n";
         helpPage += "<p>1. Reset PZEM on Server : <a href=http://"+ String(ipAddress) + "/resetpzem>http://"+ String(ipAddress) + "/resetpzem</a></p>\r\n";
-        helpPage += "<p>2. Reset Hardware on Server : <a href=http://"+ String(ipAddress) + "/resetesp>http://"+ String(ipAddress) + "/resetesp</a></p>\r\n";
+        helpPage += "<p>2. Restart Hardware on Server : <a href=http://"+ String(ipAddress) + "/restarthardware>http://"+ String(ipAddress) + "/restarthardware</a></p>\r\n";
         helpPage += "<p>3. Disable Program Fuzzy : <a href=http://"+ String(ipAddress) + "/disablefuzzy>http://"+ String(ipAddress) + "/disablefuzzy</a></p>\r\n";
         helpPage += "<p>4. Enable Program Fuzzy : <a href=http://"+ String(ipAddress) + "/enablefuzzy>http://"+ String(ipAddress) + "/enablefuzzy</a></p>\r\n";
         helpPage += "<p>5. Disable Buzzer Speaker : <a href=http://"+ String(ipAddress) + "/disablebuzzer>http://"+ String(ipAddress) + "/disablebuzzer</a></p>\r\n";
         helpPage += "<p>6. Enable Buzzer Speaker : <a href=http://"+ String(ipAddress) + "/enablebuzzer>http://"+ String(ipAddress) + "/enablebuzzer</a></p>\r\n";
         helpPage += "<p>7. Enable Auto Change Mode WiFi : Coming Soon </p>";
         helpPage += "<p>8. Disable Auto Change Mode WiFi : Coming Soon </p>";
-        helpPage += "<p>9. Configuration WiFi : <a href=http://"+ String(ipAddress) + "/config-wifi>http://"+ String(ipAddress) + "/config-wifi</a></p>\r\n";
+        helpPage += "<p>9. Configuration WiFi : <a href=http://"+ String(ipAddress) + "/config-wifi"; 
+        helpPage += (WiFi.getMode() != WIFI_AP ? " onclick=\"return confirm('Server akan direstart dan beralih mode WiFi AP... tetap dilanjutkan?')\">" : ">");
+        helpPage += "http://"+ String(ipAddress) + "/config-wifi</a></p>\r\n";
         helpPage += "<br><p><b>Powered by : <a href=https://github.com/basyair7 target='_blank'>Basyair7</a></b></p>\r\n";
         helpPage += "</body>\r\n</html>";
 

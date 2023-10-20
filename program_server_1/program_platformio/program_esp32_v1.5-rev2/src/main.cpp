@@ -59,15 +59,15 @@ SoftwareSerial atmegaSerial(atmegaRX1, atmegaTX1);
 void setup() {
   // put your setup code here, to run once:
   // Inisialisasikan serial komunikasi dengan baudrate 9600 bit per seconds (bps)
-  EEPROM.begin(EEPROM_SIZE);
+  // EEPROM.begin(EEPROM_SIZE);
   Serial.begin(9600);
   atmegaSerial.begin(9600);
   
   // Cek kondisi fuzzy dinonaktifkan atau tidak
-  int stateFuzzySwitch = EEPROM.read(0);
-  int stateBuzzerSwitch = EEPROM.read(1);
-  if(stateFuzzySwitch == 0) stateFuzzy = false;
-  if(stateBuzzerSwitch == 0) buzzerSwitch = false;
+  // int stateFuzzySwitch = EEPROM.read(0);
+  // int stateBuzzerSwitch = EEPROM.read(1);
+  // if(stateFuzzySwitch == 0) stateFuzzy = false;
+  // if(stateBuzzerSwitch == 0) buzzerSwitch = false;
 
   // pasang konfigurasi WiFi ESP32 yang baru
   // cek reconnectWiFi jika wifi esp32 terputus
@@ -83,7 +83,7 @@ void setup() {
   server_setup();
 
   // Inisialisasikan sensor dht
-  dht.begin();
+  // dht.begin();
   
   // nyalakan buzzer_startup jika server esp telah ready!
   buzzer_startup(pin_buzzer);
@@ -92,6 +92,6 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  funcMain();
+  // funcMain();
   server.handleClient();
 }

@@ -3,7 +3,16 @@
 */
 
 #include <Arduino.h>
+#include <PZEM004Tv30.h>
 #include "1_configProgram.h"
+
+// Sensor PZEM-004T Object
+#if defined(ESP32)
+PZEM004Tv30 pzem(Serial2, RXD2, TXD2);
+#else
+PZEM004Tv30 pzem(Serial2);
+#endif
+DATAPZEM datapzem;
 
 float readVoltage() {
   // mengambil data voltage dari sensor pzem

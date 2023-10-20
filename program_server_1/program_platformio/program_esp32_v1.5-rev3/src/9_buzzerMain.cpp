@@ -54,13 +54,14 @@ int noteDuration_3[] = {
 
 // this program tone buzzer in esp32
 int playing = 0;
+bool shutdown_sound = false;
 unsigned long waktuSebelum_playBuzzer = 0;
 void tone(byte pin, int freq, int d) {
   ledcSetup(0, 2000, 8); // setup beeper
   ledcAttachPin(pin, 0); // attach beeper
   ledcWriteTone(0, freq); // play tone
   playing = pin; // store pin
-  vTaskDelay(pdMS_TO_TICKS(d));
+  vTaskDelay(d / portTICK_PERIOD_MS);
 }
 void noTone(byte pin) {
   tone(playing, 0, 0);
@@ -68,11 +69,13 @@ void noTone(byte pin) {
 
 // program buzzer main
 void buzzer_main(byte buzzerPin, int STATE) {
-  if(buzzerSwitch == true) {
-    if (STATE == HIGH) tone(buzzerPin, 1000, 20);
-    if (STATE == LOW) noTone(buzzerPin);
-  } else {
-    noTone(buzzerPin);
+  if(!shutdown_sound){
+    if(buzzerSwitch == true) {
+      if (STATE == HIGH) tone(buzzerPin, 1000, 20);
+      if (STATE == LOW) noTone(buzzerPin);
+    } else {
+      noTone(buzzerPin);
+    }
   }
 }
 
@@ -116,7 +119,7 @@ void buzzer_startup(byte buzzer) {
     tone(buzzer, melody_1[thisNote], noteDuration_1*0.9);
 
     // Wait for the specief duration before playing the next note.
-    vTaskDelay(pdMS_TO_TICKS(noteDuration_1));
+    vTaskDelay(noteDuration_1 / portTICK_PERIOD_MS);
     
     // stop the waveform generation before the next note.
     noTone(buzzer);
@@ -125,6 +128,7 @@ void buzzer_startup(byte buzzer) {
 
 // program buzzer shutdown
 void buzzer_shutdown(byte buzzer) {
+  shutdown_sound = true;
   for (int thisNote = 0; thisNote < notes_2 * 2; thisNote = thisNote + 2) {
     // calculates the duration of each note
     divider_2 = melody_2[thisNote + 1];
@@ -141,7 +145,7 @@ void buzzer_shutdown(byte buzzer) {
     tone(buzzer, melody_2[thisNote], noteDuration_2*0.9);
 
     // Wait for the specief duration before playing the next note.
-    vTaskDelay(pdMS_TO_TICKS(noteDuration_2));
+    vTaskDelay(noteDuration_2 / portTICK_PERIOD_MS);
 
     // Stop the wavefrom generation before the next note.
     noTone(buzzer);

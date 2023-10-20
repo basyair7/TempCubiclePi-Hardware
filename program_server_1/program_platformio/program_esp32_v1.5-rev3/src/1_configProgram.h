@@ -55,16 +55,13 @@ extern bool buzzerSwitch;
 // Pinout Sensor DHT
 #define pinDHT      4
 
-// EEPROM_SIZE Baudrate
-#define EEPROM_SIZE 125
-
 // deklarasi variabel interval program berjalan
 #define interval_1 50   // 50ms = 0.05 detik => lama waktu mengirim data
 #define interval_2 50   // 50ms = 0.05 detik => lama waktu menerima data
 #define interval_3 3000 // 3000ms for program DHT
-#define interval_4 1500 // 1500ms for program PZEM
+#define interval_4 2000 // 2000ms for program PZEM
 #define interval_5 1000 // 1000ms for program Serial Monitor
-#define interval_reconnect 10000 // 15 detik
+#define interval_reconnect 15000 // 15 detik
 #define interval_uploadData 1000 // 1 detik
 
 // deklarasi fungsi program
@@ -80,6 +77,7 @@ extern void funcMain(void);
 extern void ProgramPushButton(void);
 extern void setupProgramPushButton(void);
 extern void programReadSPIFFS(void);
+extern void restartESP();
 
 // 4_programPZEM.cpp
 extern float readVoltage();
@@ -102,11 +100,11 @@ extern void server_setup(void);
 extern void print_data(void);
 
 // 8_configWiFi.cpp
+extern void ledMode(bool Mode_wifi_AP, long interval_start, long interval_end);
 extern void initWiFi(void);
 extern void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info);
 extern void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info);
 extern void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info);
-extern void reconnectWiFi();
 
 // 9_buzzerMain.cpp
 extern void tone(byte pin, int freq, int d);
@@ -166,6 +164,7 @@ extern DATAPZEM datapzem;
 extern WebServer server;
 extern HTTPUpdateServer httpUpdater;
 extern String page;
+extern bool wifi_AP_mode;
 
 /*! @typedef 11_programFuzzy.cpp
  @details

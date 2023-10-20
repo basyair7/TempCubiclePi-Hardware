@@ -117,6 +117,13 @@ void programReadSPIFFS(void)
     stateFuzzy = readConfig("fuzzy");
     buzzerSwitch = readConfig("buzzer");
     stateWiFiProgram = readConfig("wifi");
+    wifi_AP_mode = readConfig("changeMode");
     
     digitalWrite(ledProgramWiFiEnable, stateWiFiProgram);
+}
+
+void restartESP() {
+    buzzer_shutdown(pin_buzzer);
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    esp_restart();
 }

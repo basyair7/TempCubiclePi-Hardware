@@ -10,7 +10,6 @@
  */
 
 #include <Arduino.h>
-#include <DHT.h>
 #include <Wire.h>
 #include <WiFi.h>
 #include <SPIFFS.h>
@@ -39,6 +38,7 @@ String version = "1.5-rev3";
 WebServer server(80);
 HTTPUpdateServer httpUpdater;
 String page;
+bool wifi_AP_mode = false;
 
 // Fuzzy Logic Object
 DATAFUZZY datafuzzy;
@@ -56,19 +56,6 @@ bool buzzerSwitch = true;
 // Push Button Mode
 bool stateWiFiProgram = true;
 
-// Sensor PZEM-004T Object
-#if defined(ESP32)
-PZEM004Tv30 pzem(Serial2, RXD2, TXD2);
-#else
-PZEM004Tv30 pzem(Serial2);
-#endif
-DATAPZEM datapzem;
-
-// Sensor DHT Object
-#define DHTTYPE   DHT21
-DHT dht(pinDHT, DHTTYPE);
-DATADHT datadht;
-
 // Serial Data Arduino Object
 SoftwareSerial atmegaSerial(atmegaRX1, atmegaTX1);
 
@@ -79,14 +66,18 @@ void program_1(void* parameter) {
   while(true) {
     funcMain();
     ProgramPushButton();
-    uint8_t xDelay = (stateWiFiProgram == false ? 10 : 20);
-    vTaskDelay(pdMS_TO_TICKS((xDelay)));
+    vTaskDelay(50 / portTICK_PERIOD_MS);
   }
 }
 
 // create a program 2 for the WiFi Connection program
 void program_2(void* parameter) {
   (void) parameter;
+  if(!wifi_AP_mode) {
+    WiFi.onEvent(WiFiStationConnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED);
+    WiFi.onEvent(WiFiGotIP, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
+    WiFi.onEvent(WiFiStationDisconnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
+  }
   // initialize ESP32 WiFi Server
   initWiFi();
   Serial.print(F("ESP32 NEW HOSTNAME : "));
@@ -94,14 +85,11 @@ void program_2(void* parameter) {
   server_setup();
   // run repeatedly server.handleClient() if the WiFi network is ready
   while(true) {
+    if(wifi_AP_mode) ledMode(true, 1000, 1000);
     if(WiFi.status() == WL_CONNECTED || WiFi.getMode() == WIFI_AP) {
       server.handleClient();
     }
-    // Check WiFi reconnect if ESP32 WiFi network is disconnected
-    if(WiFi.status() != WL_CONNECTED && WiFi.getMode() != WIFI_AP) {
-      reconnectWiFi();
-    }
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
   }
 }
 
@@ -128,15 +116,14 @@ void setup() {
   delay(3000);
 
   // create a Task for program 1
-  uint32_t xStack = (stateWiFiProgram == true ? 8124 : 3000);
-  xTaskCreateUniversal(
-    program_1, "MainProgram", xStack, NULL, 1, &taskHandle_1, 0
+  xTaskCreatePinnedToCore(
+    program_1, "MainProgram", 8192, NULL, 0, &taskHandle_1, 0
   );
 
   if(stateWiFiProgram)
     // create a Task for program 2
-    xTaskCreateUniversal(
-      program_2, "WiFiProgram", 8124, NULL, 2, &taskHandle_2, 1
+    xTaskCreatePinnedToCore(
+      program_2, "WiFiProgram", 11290, NULL, 1, &taskHandle_2, 1
     );
 }
 

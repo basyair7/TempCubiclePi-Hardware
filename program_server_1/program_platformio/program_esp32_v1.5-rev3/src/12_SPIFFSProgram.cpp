@@ -8,7 +8,7 @@
 
 /* Membaca nilai config
  * stateFuzzy = "fuzzy", statebuzzer = "buzzer", stateWifi = "wifi"
- * SelfChangeMode = "changeMode"
+ * ChangeModeWiFi = "changeMode"
 */
 bool readConfig(String stateConfig) {
     File configFile = SPIFFS.open("/config/config.json", "r");
@@ -38,7 +38,7 @@ bool readConfig(String stateConfig) {
             return value;
         }
         if(stateConfig == "changeMode") {
-            bool value = doc["stateSelfChangeMode"];
+            bool value = doc["stateChangeMode"];
             return value;
         }
     }
@@ -50,7 +50,7 @@ bool readConfig(String stateConfig) {
 
 /* Menyimpan nilai config
  * stateFuzzy = "fuzzy", statebuzzer = "buzzer", stateWifi = "wifi"
- * SelfChangeMode = "changeMode"
+ * ChangeModeWiFi = "changeMode"
 */
 void saveConfig(String stateConfig, bool value) {
     File oldconfigFile = SPIFFS.open("/config/config.json", "r");
@@ -70,31 +70,31 @@ void saveConfig(String stateConfig, bool value) {
     if(stateConfig == "fuzzy" && !err) {
         bool stateBuzzerValue = data["stateBuzzer"];
         bool stateWiFiValue = data["stateWiFi"];
-        bool stateSelfChangeModeValue = data["stateSelfChangeMode"];
+        bool stateChangeModeValue = data["stateChangeMode"];
         data["stateFuzzy"] = value;
         data["stateBuzzer"] = stateBuzzerValue;
         data["stateWiFi"] = stateWiFiValue;
-        data["stateSelfChangeMode"] = stateSelfChangeModeValue;
+        data["stateChangeMode"] = stateChangeModeValue;
     }
 
     if(stateConfig == "buzzer" && !err) {
         bool stateFuzzyValue = data["stateFuzzy"];
         bool stateWiFiValue = data["stateWiFi"];
-        bool stateSelfChangeModeValue = data["stateSelfChangeMode"];
+        bool stateChangeModeValue = data["stateChangeMode"];
         data["stateFuzzy"] = stateFuzzyValue;
         data["stateBuzzer"] = value;
         data["stateWiFi"] = stateWiFiValue;
-        data["stateSelfChangeMode"] = stateSelfChangeModeValue;
+        data["stateChangeMode"] = stateChangeModeValue;
     }
 
     if(stateConfig == "wifi" && !err) {
         bool stateBuzzerValue = data["stateBuzzer"];
         bool stateFuzzyValue = data["stateFuzzy"];
-        bool stateSelfChangeModeValue = data["stateSelfChangeMode"];
+        bool stateChangeModeValue = data["stateChangeMode"];
         data["stateFuzzy"] = stateFuzzyValue;
         data["stateBuzzer"] = stateBuzzerValue;
         data["stateWiFi"] = value;
-        data["stateSelfChangeMode"] = stateSelfChangeModeValue;
+        data["stateChangeMode"] = stateChangeModeValue;
     }
 
     if(stateConfig == "changeMode" && !err) {
@@ -104,7 +104,7 @@ void saveConfig(String stateConfig, bool value) {
         data["stateFuzzy"] = stateFuzzyValue;
         data["stateBuzzer"] = stateBuzzerValue;
         data["stateWiFi"] = stateWiFiValue;
-        data["stateSelfChangeMode"] = value;
+        data["stateChangeMode"] = value;
     }
 
     size_t serializeSize = measureJson(data);
@@ -270,7 +270,7 @@ void setupSPIFFS(void)
         data["stateFuzzy"] = true;
         data["stateBuzzer"] = true;
         data["stateWiFi"] = false;
-        data["stateSelfChangeMode"] = false;
+        data["stateChangeMode"] = false;
         
         File configFile = SPIFFS.open("/config/config.json", "w");
         if(!configFile) {
@@ -282,32 +282,3 @@ void setupSPIFFS(void)
     }
     listSPIFFSFiles();
 }
-
-/*
-bool loadConfigWiFi() {
-    DynamicJsonDocument data(200);
-    File configFile = SPIFFS.open("/configWifi.json", "r");
-    if(!configFile) {
-        Serial.println(F("Failed to open config file"));
-        return false;
-    }
-
-    size_t size = configFile.size();
-    std::unique_ptr<char[]> buffer(new char[size]);
-
-    configFile.readBytes(buffer.get(), size);
-    configFile.close();
-
-    DeserializationError error = deserializeJson(data, buffer.get());
-    if(!error) {
-        char* newSSID = data["ssid"];
-        char* newPassword = data["password"];
-
-        return true;
-    }
-    else {
-        Serial.println(F("Failed to read config file"));
-        return false;
-    }
-}
-*/
