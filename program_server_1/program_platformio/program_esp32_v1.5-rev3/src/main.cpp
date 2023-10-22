@@ -20,8 +20,8 @@
 #include "1_configProgram.h"
 
 // Define a task handle and initialize it to NULL
-TaskHandle_t taskHandle_1 = NULL;
-TaskHandle_t taskHandle_2 = NULL;
+// TaskHandle_t taskHandle_1 = NULL;
+// TaskHandle_t taskHandle_2 = NULL;
 
 // // Define static variables for tasks and task stacks
 // StaticTask_t xTaskBuffer;
@@ -66,7 +66,7 @@ void program_1(void* parameter) {
   while(true) {
     funcMain();
     ProgramPushButton();
-    vTaskDelay(50 / portTICK_PERIOD_MS);
+    delay(100);
   }
 }
 
@@ -89,7 +89,7 @@ void program_2(void* parameter) {
     if(WiFi.status() == WL_CONNECTED || WiFi.getMode() == WIFI_AP) {
       server.handleClient();
     }
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    delay(2000);
   }
 }
 
@@ -116,14 +116,14 @@ void setup() {
   delay(3000);
 
   // create a Task for program 1
-  xTaskCreatePinnedToCore(
-    program_1, "MainProgram", 8192, NULL, 0, &taskHandle_1, 0
+  xTaskCreateUniversal(
+    program_1, "MainProgram", 51290, NULL, 0, NULL, 0
   );
 
   if(stateWiFiProgram)
     // create a Task for program 2
-    xTaskCreatePinnedToCore(
-      program_2, "WiFiProgram", 11290, NULL, 1, &taskHandle_2, 1
+    xTaskCreateUniversal(
+      program_2, "WiFiProgram", 21290, NULL, 1, NULL, 1
     );
 }
 

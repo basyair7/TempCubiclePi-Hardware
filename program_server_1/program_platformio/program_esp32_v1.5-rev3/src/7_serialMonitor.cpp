@@ -6,10 +6,9 @@
 #include <WiFi.h>
 #include "1_configProgram.h"
 
-unsigned long currentTimeMain = 0;
-
+uint64_t currentTimeMain = 0;
 void print_data(void) {
-  if((unsigned long) (millis() - currentTimeMain) >= interval_5) {
+  if(millis() - currentTimeMain >= interval_5) {
     Serial.println(F("\nControl Voltage Fan Exhaust & Heater"));
     Serial.println(F("******************************************************"));
     Serial.print(F("IP Address           : "));

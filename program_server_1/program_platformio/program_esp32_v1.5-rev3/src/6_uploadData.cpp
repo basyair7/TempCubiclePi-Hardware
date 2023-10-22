@@ -13,15 +13,15 @@
 #include "1_configProgram.h"
 
 // buat fungsi mengirim data
-unsigned long waktuSebelum_uploadData = 0;
+uint64_t waktuSebelum_uploadData = 0;
 bool mDNSESPReady = false;
 
 void send_data(String kodekubikel_input, 
 float tegangan_input, float arus_input, float daya_input, float pF_input, float energy_input, float freq_input,
 float temp_input, float hum_input, float dimmerHeater, float fisOutputHeater, float dimmerFan, float fisOutputFan)
 {
-    unsigned long waktuSekarang = millis();
-    if ((unsigned long) (waktuSekarang - waktuSebelum_uploadData) >= interval_uploadData) {
+    uint64_t waktuSekarang = millis();
+    if (waktuSekarang - waktuSebelum_uploadData >= interval_uploadData) {
         waktuSebelum_uploadData = waktuSekarang;
         // buat object DynamicJsonDocument data
         DynamicJsonDocument data_page(500);
@@ -45,8 +45,7 @@ float temp_input, float hum_input, float dimmerHeater, float fisOutputHeater, fl
 
         // masukan data ke variabel page
         serializeJson(data_page, page);
-        vTaskDelay(30 / portTICK_PERIOD_MS);
-        
+        delay(30);
     }
 }
 
@@ -87,7 +86,7 @@ void server_setup(void) {
     if (!MDNS.begin("esp32-webupdate")) {
         Serial.println(F("Error setting up MDNS responder!"));
         while (true) {
-            vTaskDelay(1000 / portTICK_PERIOD_MS);
+            delay(1000);
         }
     }
     mDNSESPReady = true;
@@ -107,7 +106,7 @@ void server_setup(void) {
         resetpzem();
         page = "{\"pzem_state\": \""+String(1)+"\", \"reason\": \""+String("pzem energy has restarted....")+"\"}";
         server.send(200, "text/plain", page);
-        vTaskDelay(20 / portTICK_PERIOD_MS);
+        delay(20);
         page = "";
     });
 
@@ -184,7 +183,7 @@ void server_setup(void) {
         html += "<br><p><b>Powered by : <a href=https://github.com/basyair7 target='_blank'>Basyair7</a></b></p>\r\n";
         html += "</body>\r\n</html>";
         server.send(200, "text/html", html);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        delay(1000);
         if(resetESP) restartESP();
     });
 

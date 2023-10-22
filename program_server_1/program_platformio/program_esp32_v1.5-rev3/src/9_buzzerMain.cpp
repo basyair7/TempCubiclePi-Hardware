@@ -55,13 +55,13 @@ int noteDuration_3[] = {
 // this program tone buzzer in esp32
 int playing = 0;
 bool shutdown_sound = false;
-unsigned long waktuSebelum_playBuzzer = 0;
+uint64_t waktuSebelum_playBuzzer = 0;
 void tone(byte pin, int freq, int d) {
   ledcSetup(0, 2000, 8); // setup beeper
   ledcAttachPin(pin, 0); // attach beeper
   ledcWriteTone(0, freq); // play tone
   playing = pin; // store pin
-  vTaskDelay(d / portTICK_PERIOD_MS);
+  delay(d);
 }
 void noTone(byte pin) {
   tone(playing, 0, 0);
@@ -80,16 +80,16 @@ void buzzer_main(byte buzzerPin, int STATE) {
 }
 
 // program buzzer error
-void buzzer_error(byte buzzerPin, long millisMain, long interval) 
+void buzzer_error(byte buzzerPin, uint64_t millisMain, uint64_t interval) 
 {
   if(BuzzerState == HIGH) {
-    if((unsigned long) (millisMain - waktuSebelum_playBuzzer) >= interval) {
+    if(millisMain - waktuSebelum_playBuzzer >= interval) {
       waktuSebelum_playBuzzer = millisMain;
       BuzzerState = LOW;
     }
   }
   else {
-    if((unsigned long) (millisMain - waktuSebelum_playBuzzer) >= interval) {
+    if(millisMain - waktuSebelum_playBuzzer >= interval) {
       waktuSebelum_playBuzzer = millisMain;
       BuzzerState = HIGH;
     }
@@ -119,7 +119,7 @@ void buzzer_startup(byte buzzer) {
     tone(buzzer, melody_1[thisNote], noteDuration_1*0.9);
 
     // Wait for the specief duration before playing the next note.
-    vTaskDelay(noteDuration_1 / portTICK_PERIOD_MS);
+    delay(noteDuration_1);
     
     // stop the waveform generation before the next note.
     noTone(buzzer);
@@ -145,7 +145,7 @@ void buzzer_shutdown(byte buzzer) {
     tone(buzzer, melody_2[thisNote], noteDuration_2*0.9);
 
     // Wait for the specief duration before playing the next note.
-    vTaskDelay(noteDuration_2 / portTICK_PERIOD_MS);
+    delay(noteDuration_2);
 
     // Stop the wavefrom generation before the next note.
     noTone(buzzer);
@@ -154,7 +154,7 @@ void buzzer_shutdown(byte buzzer) {
 
 // Notification Sound
 // Logic Fuzzy
-void NotifFuzzy (uint8_t pinSound, bool state) {
+void NotifFuzzy (byte pinSound, bool state) {
   if(state == true) {
     tone(pinSound, NOTE_A4, 500);
     tone(pinSound, NOTE_D5, 200);
@@ -168,12 +168,12 @@ void NotifFuzzy (uint8_t pinSound, bool state) {
 }
 
 // Buzzer Enable
-void NotifBuzzer (uint8_t pinSound) {
+void NotifBuzzer (byte pinSound) {
   for (int thisNote = 0; thisNote < 8; thisNote++) {
     int noteDuration = 1000 / noteDuration_3[thisNote];
     tone(pinSound, melody_3[thisNote], noteDuration);
     int pauseBetweenNotes = noteDuration * 1.30;
-    vTaskDelay(pauseBetweenNotes / portTICK_PERIOD_MS);
+    delay(pauseBetweenNotes);
     noTone(pinSound);
   }
 }

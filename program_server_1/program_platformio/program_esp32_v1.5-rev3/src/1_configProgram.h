@@ -58,7 +58,7 @@ extern bool buzzerSwitch;
 // deklarasi variabel interval program berjalan
 #define interval_1 50   // 50ms = 0.05 detik => lama waktu mengirim data
 #define interval_2 50   // 50ms = 0.05 detik => lama waktu menerima data
-#define interval_3 3000 // 3000ms for program DHT
+#define interval_3 5000 // 5000ms for program DHT
 #define interval_4 2000 // 2000ms for program PZEM
 #define interval_5 1000 // 1000ms for program Serial Monitor
 #define interval_reconnect 15000 // 15 detik
@@ -100,7 +100,7 @@ extern void server_setup(void);
 extern void print_data(void);
 
 // 8_configWiFi.cpp
-extern void ledMode(bool Mode_wifi_AP, long interval_start, long interval_end);
+extern void ledMode(bool Mode_wifi_AP, uint64_t interval_start, uint64_t interval_end);
 extern void initWiFi(void);
 extern void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info);
 extern void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info);
@@ -109,10 +109,10 @@ extern void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info);
 // 9_buzzerMain.cpp
 extern void tone(byte pin, int freq, int d);
 extern void noTone(byte pin);
-extern void NotifFuzzy (uint8_t pinSound, bool state);
-extern void NotifBuzzer (uint8_t pinSound);
+extern void NotifFuzzy (byte pinSound, bool state);
+extern void NotifBuzzer (byte pinSound);
 extern void buzzer_main(byte buzzerPin, int STATE);
-extern void buzzer_error(byte buzzerPin, long millisMain, long interval);
+extern void buzzer_error(byte buzzerPin, uint64_t millisMain, uint64_t interval);
 extern void buzzer_startup(byte buzzer);
 extern void buzzer_shutdown(byte buzzer);
 

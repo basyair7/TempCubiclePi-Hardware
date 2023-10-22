@@ -7,28 +7,27 @@
 #include "1_configProgram.h"
 
 // deklarasi variabel millis waktu sebelum jalannya program
-unsigned long waktuSebelum_1 = 0, waktuSebelum_2 = 0;
-unsigned long waktuSebelum_3 = 0, waktuSebelum_4 = 0;
-unsigned long lastPushButton = 0, PushButtonDelay = 50;
+uint64_t waktuSebelum_1 = 0, waktuSebelum_2 = 0, waktuSebelum_3 = 0, waktuSebelum_4 = 0;
+uint64_t lastPushButton = 0, PushButtonDelay = 50;
 int count = 0;
 // int SelfChangeMode = 0;
 
 void funcMain(void)
 {
-    unsigned long waktuSekarang = millis();
-    if ((unsigned long)(waktuSekarang - waktuSebelum_1) >= interval_1)
+    uint64_t waktuSekarang = millis();
+    if (waktuSekarang - waktuSebelum_1 >= interval_1)
     {
         waktuSebelum_1 = waktuSekarang;
         sendDataESP();
     }
 
-    if ((unsigned long)(waktuSekarang - waktuSebelum_2) >= interval_2)
+    if (waktuSekarang - waktuSebelum_2 >= interval_2)
     {
         waktuSebelum_2 = waktuSekarang;
         getDataAtmega();
     }
 
-    if ((unsigned long)(waktuSekarang - waktuSebelum_3) >= interval_3)
+    if (waktuSekarang - waktuSebelum_3 >= interval_3)
     {
         waktuSebelum_3 = waktuSekarang;
         // ambil data sensor DHT22 dan masukan ke program fuzzy
@@ -43,7 +42,7 @@ void funcMain(void)
         datafuzzy.fisOutputFan = g_fisOutput[1];
     }
 
-    if ((unsigned long)(waktuSekarang - waktuSebelum_4) >= interval_4)
+    if (waktuSekarang - waktuSebelum_4 >= interval_4)
     {
         waktuSebelum_4 = waktuSekarang;
         // ambil data tegangan, arus, daya, energi, frekuensi, dan pf dari sensor pzem
