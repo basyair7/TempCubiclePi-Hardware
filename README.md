@@ -9,6 +9,8 @@ Project Tugas Akhir Fathul Basyair (Mahasiswa Teknik Elektro USK 2019)
 - Memperbaiki program arduino sebagai input PWM dimmer
 - Memperbaiki dan menambahkan fungsi enable/disable program fuzzy
 - Memindahkan program fuzzy dari arduino ke ESP32 server
+- Menambahan uploader OTA
+- Memperbaiki help page dan menambahkan system info
 
 ## Tujuan program
 Tujuan program ini untuk menjaga suhu dan kelembapan pada kubikel 20kv secara otomatis dengan logika fuzzy
