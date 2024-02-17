@@ -14,6 +14,7 @@
 #include <WiFi.h>
 #include <SPIFFS.h>
 #include <WebServer.h>
+#include <ElegantOTA.h>
 #include <HTTPUpdateServer.h>
 #include <PZEM004Tv30.h>
 #include <SoftwareSerial.h>
@@ -22,14 +23,6 @@
 // Define a task handle and initialize it to NULL
 // TaskHandle_t taskHandle_1 = NULL;
 // TaskHandle_t taskHandle_2 = NULL;
-
-// // Define static variables for tasks and task stacks
-// StaticTask_t xTaskBuffer;
-// StackType_t xStack[configMINIMAL_STACK_SIZE];
-
-// Insert ssid and password server
-const char* ssid = STASSID;
-const char* password = STAPSK;
 
 // Insert version program
 String version = "1.5-rev3";
@@ -89,6 +82,7 @@ void program_2(void* parameter) {
     if(WiFi.status() == WL_CONNECTED || WiFi.getMode() == WIFI_AP) {
       server.handleClient();
     }
+    ElegantOTA.loop();
     delay(2000);
   }
 }
@@ -107,7 +101,7 @@ void setup() {
   
   // Initialize DHT-22 Sensor
   dht.begin();
-  
+
   // Check fuzzy condition is disabled or not
   programReadSPIFFS();
 
@@ -117,14 +111,17 @@ void setup() {
 
   // create a Task for program 1
   xTaskCreateUniversal(
-    program_1, "MainProgram", 51290, NULL, 0, NULL, 0
+    program_1, "MainProgram", 8190, NULL, 1, NULL, 0
   );
 
-  if(stateWiFiProgram)
+  if(stateWiFiProgram) {
+    checkWiFiConfig();
+    ElegantOTA.begin(&server);
     // create a Task for program 2
     xTaskCreateUniversal(
-      program_2, "WiFiProgram", 21290, NULL, 1, NULL, 1
+      program_2, "WiFiProgram", 8190, NULL, 2, NULL, 1
     );
+  }
 }
 
 void loop() {

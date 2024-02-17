@@ -13,15 +13,18 @@
 // setting find WiFi Hotspot
 #ifndef STASSID
 #define STASSID "TempCubiclePi@PA01"
-#define STAPSK "Server_PA01"
-extern const char* ssid;
-extern const char* password;
+#define STAPSK "serverpa01"
 extern String ipAddress;
 extern String version;
 #endif
 
 #ifndef CONFIGPROGRAM_H
 #define CONFIGPROGRAM_H
+
+// informasi firmware
+#define FIRMWAREVERSION "1.5.3.12"
+#define BUILDTIME       "17/2/2024 10.58"
+#define FIRMWAREREGION  "Indonesia"
 
 // informasi kubikel
 #define kodekubikel "PA01"
@@ -32,35 +35,38 @@ extern String ipAddress;
 #define MAX_HUM  80 // 80 %
 
 // pinout sensor
-// Pinout Serial Data Arduino
-#define atmegaRX1   25
-#define atmegaTX1   26
-extern int callback_1;
-extern int callback_4;
-
 // Pinout Push Button WiFi Mode
 #define bootButton  0
 #define ledProgramWiFiEnable LED_BUILTIN
-extern bool stateWiFiProgram;
+extern bool stateWiFiProgram, SelfChangeMode;
+
+// Pinout Sensor DHT
+#define pinDHT      4
+
+// Pinout Serial Data Sensor PZEM-004T
+#define RXD2        16
+#define TXD2        17
+
+// Pinout Restart Hardware
+#define GPIORESTART 18
 
 // Pinout Buzzer
 #define pin_buzzer  22
 extern int BuzzerState;
 extern bool buzzerSwitch;
 
-// Pinout Serial Data Sensor PZEM-004T
-#define RXD2        16
-#define TXD2        17
-
-// Pinout Sensor DHT
-#define pinDHT      4
+// Pinout Serial Data Arduino
+#define atmegaRX1   25
+#define atmegaTX1   26
+extern int callback_1;
+extern int callback_4;
 
 // deklarasi variabel interval program berjalan
 #define interval_1 50   // 50ms = 0.05 detik => lama waktu mengirim data
 #define interval_2 50   // 50ms = 0.05 detik => lama waktu menerima data
-#define interval_3 5000 // 5000ms for program DHT
+#define interval_3 2500 // 2500ms for program DHT
 #define interval_4 2000 // 2000ms for program PZEM
-#define interval_5 1000 // 1000ms for program Serial Monitor
+#define interval_5 5000 // 1000ms for program Serial Monitor
 #define interval_reconnect 15000 // 15 detik
 #define interval_uploadData 1000 // 1 detik
 
@@ -68,9 +74,8 @@ extern bool buzzerSwitch;
 // main.cpp
 extern void program_1(void* parameter);
 extern void program_2(void* parameter);
-extern TaskHandle_t taskHandle_1;
-extern TaskHandle_t taskHandle_2;
-// extern int SelfChangeMode;
+// extern TaskHandle_t taskHandle_1;
+// extern TaskHandle_t taskHandle_2;
 
 // 3_programMain.cpp
 extern void funcMain(void);
@@ -101,7 +106,7 @@ extern void print_data(void);
 
 // 8_configWiFi.cpp
 extern void ledMode(bool Mode_wifi_AP, uint64_t interval_start, uint64_t interval_end);
-extern void initWiFi(void);
+extern void initWiFi(void), checkWiFiConfig();
 extern void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info);
 extern void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info);
 extern void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info);

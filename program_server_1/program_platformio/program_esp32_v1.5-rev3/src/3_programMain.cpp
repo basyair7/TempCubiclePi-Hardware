@@ -10,7 +10,7 @@
 uint64_t waktuSebelum_1 = 0, waktuSebelum_2 = 0, waktuSebelum_3 = 0, waktuSebelum_4 = 0;
 uint64_t lastPushButton = 0, PushButtonDelay = 50;
 int count = 0;
-// int SelfChangeMode = 0;
+bool SelfChangeMode = false;
 
 void funcMain(void)
 {
@@ -76,18 +76,14 @@ void funcMain(void)
         {
             Serial.println(F("Mode WiFi di aktifkan..."));
             saveConfig("wifi", true);
-            buzzer_shutdown(pin_buzzer);
-            vTaskDelay(2000 / portTICK_PERIOD_MS);
-            ESP.restart();
+            restartESP();
         }
 
         if (count > 5 && stateWiFiProgram)
         {
             Serial.println(F("Mode WiFi di nonaktifkan..."));
             saveConfig("wifi", false);
-            buzzer_shutdown(pin_buzzer);
-            vTaskDelay(2000 / portTICK_PERIOD_MS);
-            ESP.restart();
+            restartESP();
         }
     }
 }
@@ -117,12 +113,13 @@ void programReadSPIFFS(void)
     buzzerSwitch = readConfig("buzzer");
     stateWiFiProgram = readConfig("wifi");
     wifi_AP_mode = readConfig("changeMode");
+    SelfChangeMode = readConfig("autoChangeMode");
     
     digitalWrite(ledProgramWiFiEnable, stateWiFiProgram);
 }
 
-void restartESP() {
+void restartESP(void) {
     buzzer_shutdown(pin_buzzer);
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    delay(1000);
     esp_restart();
 }

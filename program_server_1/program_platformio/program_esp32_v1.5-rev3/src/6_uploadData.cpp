@@ -11,6 +11,7 @@
 #include <HTTPUpdateServer.h>
 #include <ArduinoJson.h>
 #include "1_configProgram.h"
+#include "WebPage.h"
 
 // buat fungsi mengirim data
 uint64_t waktuSebelum_uploadData = 0;
@@ -101,7 +102,7 @@ void server_setup(void) {
     server.on("/" + String(kodekubikel), handleRoot);
     // server.on("/", handleRoot);
 
-    // reset pzem page
+    //1. reset pzem page
     server.on("/resetpzem", []() {
         resetpzem();
         page = "{\"pzem_state\": \""+String(1)+"\", \"reason\": \""+String("pzem energy has restarted....")+"\"}";
@@ -110,14 +111,14 @@ void server_setup(void) {
         page = "";
     });
 
-    // reset server
+    //2. reset server
     server.on("/restarthardware", []() {
         page = "{\"restart_state\": \""+String(1)+"\", \"reason\": \""+String("Server ")+ String(kodekubikel) +String(" has restarted....")+"\"}";
         server.send(200, "text/plain", page);
         restartESP();
     });
 
-    // disable program fuzzy
+    //3. disable program fuzzy
     server.on("/disablefuzzy", []() {
         page = "{\"fuzzy_state\": \""+String(0)+"\", \"reason\": \""+String("fuzzy logic has been disable....")+"\"}";
         server.send(200, "text/plain", page);
@@ -127,7 +128,7 @@ void server_setup(void) {
         NotifFuzzy(pin_buzzer, false);
     });
 
-    // enable program fuzzy
+    //4. enable program fuzzy
     server.on("/enablefuzzy", []() {
        page = "{\"fuzzy_state\": \""+String(1)+"\", \"reason\": \""+String("fuzzy logic has been enable....")+"\"}";
         server.send(200, "text/plain", page);
@@ -137,7 +138,7 @@ void server_setup(void) {
         NotifFuzzy(pin_buzzer, true);
     });
 
-    // disable buzzer speaker
+    //5. disable buzzer speaker
     server.on("/disablebuzzer", []() {
         page = "{\"buzzer_state\": \""+String(0)+"\", \"reason\": \""+String("buzzer speaker has been disable....")+"\"}";
         server.send(200, "text/plain", page);
@@ -146,7 +147,7 @@ void server_setup(void) {
         page = "";
     });
 
-    // enable buzzer speaker
+    //6. enable buzzer speaker
     server.on("/enablebuzzer", []() {
         page = "{\"buzzer_state\": \""+String(1)+"\", \"reason\": \""+String("buzzer speaker has been enable....")+"\"}";
         server.send(200, "text/plain", page);
@@ -156,7 +157,25 @@ void server_setup(void) {
         NotifBuzzer(pin_buzzer);
     });
 
-    // config WiFi server
+    //7. enable Auto Change Mode WiFi
+    server.on("/enableautochangemodewifi", []() {
+        page = "{\"auto_changeMode\": \""+String(1)+"\", \"reason\": \""+String("Auto Change Mode WiFi AP has been enable....")+"\"}";
+        server.send(200, "text/plain", page);
+        buzzerSwitch = true;
+        saveConfig("autoChangeMode", true);
+        page = "";
+    });
+
+    //8. disable Auto Change Mode WiFi
+    server.on("/disableautochangemodewifi", []() {
+        page = "{\"auto_changeMode\": \""+String(0)+"\", \"reason\": \""+String("Auto Change Mode WiFi AP has been disable....")+"\"}";
+        server.send(200, "text/plain", page);
+        buzzerSwitch = true;
+        saveConfig("autoChangeMode", false);
+        page = "";
+    });
+
+    //9. config WiFi server
     server.on("/config-wifi", HTTP_GET, []() {
         bool resetESP = false;
         String html = "<!DOCTYPE>\r\n<html>\r\n<head>\r\n<meta charset='utf-8'>\r\n<meta name='viewport' content='width=device-width, initial-scale=1.0'>\r\n";
@@ -212,24 +231,50 @@ void server_setup(void) {
 
     // help configurate
     server.on("/help", []() {
-        String helpPage = "<!DOCTYPE html>\r\n<html>\r\n<head>\r\n<meta charset='utf-8'>\r\n<meta name='viewport' content='width=device-width, initial-scale=1.0'>\r\n";
-        helpPage += "<meta name='description' content='configWiFi'>\r\n<meta name='author' content='PHPGurukul'>\r\n";
-        helpPage += "<title>Helper Page - TempCubiclePi "+String(version)+"</title>\r\n</head>\r\n";
-        helpPage += "<body>\r\n<h4>Helper Page - TempCubiclePi "+String(version)+"<br /> TCP server started : </h4>";
-        helpPage += "<p><a href=http://"+ String(ipAddress) +"/"+ String(kodekubikel) +"> IPAddress : " + String(ipAddress) + "/" + String(kodekubikel) + "</a></p>\r\n";
-        helpPage += "<p>1. Reset PZEM on Server : <a href=http://"+ String(ipAddress) + "/resetpzem>http://"+ String(ipAddress) + "/resetpzem</a></p>\r\n";
-        helpPage += "<p>2. Restart Hardware on Server : <a href=http://"+ String(ipAddress) + "/restarthardware>http://"+ String(ipAddress) + "/restarthardware</a></p>\r\n";
-        helpPage += "<p>3. Disable Program Fuzzy : <a href=http://"+ String(ipAddress) + "/disablefuzzy>http://"+ String(ipAddress) + "/disablefuzzy</a></p>\r\n";
-        helpPage += "<p>4. Enable Program Fuzzy : <a href=http://"+ String(ipAddress) + "/enablefuzzy>http://"+ String(ipAddress) + "/enablefuzzy</a></p>\r\n";
-        helpPage += "<p>5. Disable Buzzer Speaker : <a href=http://"+ String(ipAddress) + "/disablebuzzer>http://"+ String(ipAddress) + "/disablebuzzer</a></p>\r\n";
-        helpPage += "<p>6. Enable Buzzer Speaker : <a href=http://"+ String(ipAddress) + "/enablebuzzer>http://"+ String(ipAddress) + "/enablebuzzer</a></p>\r\n";
-        helpPage += "<p>7. Enable Auto Change Mode WiFi : Coming Soon </p>";
-        helpPage += "<p>8. Disable Auto Change Mode WiFi : Coming Soon </p>";
-        helpPage += "<p>9. Configuration WiFi : <a href=http://"+ String(ipAddress) + "/config-wifi"; 
-        helpPage += (WiFi.getMode() != WIFI_AP ? " onclick=\"return confirm('Server akan direstart dan beralih mode WiFi AP... tetap dilanjutkan?')\">" : ">");
-        helpPage += "http://"+ String(ipAddress) + "/config-wifi</a></p>\r\n";
-        helpPage += "<br><p><b>Powered by : <a href=https://github.com/basyair7 target='_blank'>Basyair7</a></b></p>\r\n";
-        helpPage += "</body>\r\n</html>";
+        String a_tags[19] = {
+            version,
+            version,
+            "<p> TCP server started : <a href=http://"+ String(ipAddress) +"/" + 
+                String(kodekubikel) +"> IPAddress : " + String(ipAddress)+"/"+
+            String(kodekubikel) + "</a></p>",
+            FIRMWAREVERSION,
+            BUILDTIME,
+            FIRMWAREREGION,
+            String((SelfChangeMode == true ? "Enable" : "Disable")),
+            String((stateFuzzy == true ? "Enable" : "Disable")),
+            String((buzzerSwitch == true ? "Enable" : "Disable")),
+            "<p>1. Reset PZEM on Server : <a href=http://" + String(ipAddress) + "/resetpzem>http://"+ String(ipAddress) + "/resetpzem</a></p>",
+            "<p>2. Restart Hardware on Server : <a href=http://"+ String(ipAddress) + "/restarthardware>http://"+ String(ipAddress) + "/restarthardware</a></p>",
+            "<p>3. Disable Program Fuzzy : <a href=http://" + String(ipAddress) + "/disablefuzzy>http://"+ String(ipAddress) + "/disablefuzzy</a></p>",
+            "<p>4. Enable Program Fuzzy : <a href=http://" + String(ipAddress) + "/enablefuzzy>http://"+ String(ipAddress) + "/enablefuzzy</a></p>",
+            "<p>5. Disable Buzzer Speaker : <a href=http://" + String(ipAddress) + "/disablebuzzer>http://"+ String(ipAddress) + "/disablebuzzer</a></p>",
+            "<p>6. Enable Buzzer Speaker : <a href=http://" + String(ipAddress) + "/enablebuzzer>http://"+ String(ipAddress) + "/enablebuzzer</a></p>",
+            "<p>7. Enable Auto Change Mode WiFi : <a href=http://"+ String(ipAddress) + "/enableautochangemodewifi>http://" + String(ipAddress) + "/enableautochangemodewifi</a></p>",
+            "<p>8. Disable Auto Change Mode WiFi : <a href=http://"+ String(ipAddress) + "/disableautochangemodewifi>http://" + String(ipAddress) + "/disableautochangemodewifi</a></p>",
+            "<p>9. Configuration WiFi : <a href=http://" + String(ipAddress) + "/config-wifi"+
+                String((WiFi.getMode() != WIFI_AP ? " onclick=\"return confirm('Server akan direstart dan beralih mode WiFi AP... tetap dilanjutkan?')\" target='_blank'>" : " target='_blank'>"))+
+            "http://"+ String(ipAddress) + "/config-wifi</a></p>",
+            "<p>10. Update Firmware ESP : <a href=http://" + String(ipAddress) + "/update target='_blank'>http://" + String(ipAddress) + "/update</p>"
+        };
+
+        // menghitung ukuran buffer
+        int buffer_size = sizeof(index_html);
+        for(int i = 0; i < 18; i++) {
+            buffer_size += a_tags[i].length();
+        }
+
+        // membuat typedata helpPage untuk menyimpan hasil sprintf
+        char helpPage[buffer_size];
+
+        // menggunakan sprintf untuk menggabungkan string
+        sprintf(
+            helpPage, index_html,
+            a_tags[0].c_str(), a_tags[1].c_str(), a_tags[2].c_str(), a_tags[3].c_str(), a_tags[4].c_str(),
+            a_tags[5].c_str(), a_tags[6].c_str(), a_tags[7].c_str(), a_tags[8].c_str(), a_tags[9].c_str(),
+            a_tags[10].c_str(), a_tags[11].c_str(), a_tags[12].c_str(), a_tags[13].c_str(), a_tags[14].c_str(),
+            a_tags[15].c_str(), a_tags[16].c_str(), a_tags[17].c_str(), a_tags[18].c_str()
+            
+        );
 
         server.send(200, "text/html", helpPage);
     });

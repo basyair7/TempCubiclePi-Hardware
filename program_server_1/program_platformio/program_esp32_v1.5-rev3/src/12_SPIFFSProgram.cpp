@@ -24,23 +24,25 @@ bool readConfig(String stateConfig) {
 
     DynamicJsonDocument doc(200);
     DeserializationError err = deserializeJson(doc, buf.get());
-    if(!err) {
-        if(stateConfig == "fuzzy") {
-            bool value = doc["stateFuzzy"];
-            return value;
-        }
-        if(stateConfig == "buzzer") {
-            bool value = doc["stateBuzzer"];
-            return value;
-        }
-        if(stateConfig == "wifi") {
-            bool value = doc["stateWiFi"];
-            return value;
-        }
-        if(stateConfig == "changeMode") {
-            bool value = doc["stateChangeMode"];
-            return value;
-        }
+    if(!err && stateConfig == "fuzzy") {
+        bool value = doc["stateFuzzy"];
+        return value;
+    }
+    if(!err && stateConfig == "buzzer") {
+        bool value = doc["stateBuzzer"];
+        return value;
+    }
+    if(!err && stateConfig == "wifi") {
+        bool value = doc["stateWiFi"];
+        return value;
+    }
+    if(!err && stateConfig == "changeMode") {
+        bool value = doc["stateChangeMode"];
+        return value;
+    }
+    if(!err && stateConfig == "autoChangeMode") {
+        bool value = doc["stateAutoChangeMode"];
+        return value;
     }
     else {
         Serial.println(F("Gagal mengurai data JSON"));
@@ -50,7 +52,7 @@ bool readConfig(String stateConfig) {
 
 /* Menyimpan nilai config
  * stateFuzzy = "fuzzy", statebuzzer = "buzzer", stateWifi = "wifi"
- * ChangeModeWiFi = "changeMode"
+ * ChangeModeWiFi = "changeMode", autoChangeModeWifi = autoChangeMode
 */
 void saveConfig(String stateConfig, bool value) {
     File oldconfigFile = SPIFFS.open("/config/config.json", "r");
@@ -71,40 +73,60 @@ void saveConfig(String stateConfig, bool value) {
         bool stateBuzzerValue = data["stateBuzzer"];
         bool stateWiFiValue = data["stateWiFi"];
         bool stateChangeModeValue = data["stateChangeMode"];
+        bool stateAutoChangeModeValue = data["stateAutoChangeMode"];
         data["stateFuzzy"] = value;
         data["stateBuzzer"] = stateBuzzerValue;
         data["stateWiFi"] = stateWiFiValue;
         data["stateChangeMode"] = stateChangeModeValue;
+        data["stateAutoChangeMode"] = stateAutoChangeModeValue;
     }
 
     if(stateConfig == "buzzer" && !err) {
         bool stateFuzzyValue = data["stateFuzzy"];
         bool stateWiFiValue = data["stateWiFi"];
         bool stateChangeModeValue = data["stateChangeMode"];
+        bool stateAutoChangeModeValue = data["stateAutoChangeMode"];
         data["stateFuzzy"] = stateFuzzyValue;
         data["stateBuzzer"] = value;
         data["stateWiFi"] = stateWiFiValue;
         data["stateChangeMode"] = stateChangeModeValue;
+        data["stateAutoChangeMode"] = stateAutoChangeModeValue;
     }
 
     if(stateConfig == "wifi" && !err) {
         bool stateBuzzerValue = data["stateBuzzer"];
         bool stateFuzzyValue = data["stateFuzzy"];
         bool stateChangeModeValue = data["stateChangeMode"];
+        bool stateAutoChangeModeValue = data["stateAutoChangeMode"];
         data["stateFuzzy"] = stateFuzzyValue;
         data["stateBuzzer"] = stateBuzzerValue;
         data["stateWiFi"] = value;
         data["stateChangeMode"] = stateChangeModeValue;
+        data["stateAutoChangeMode"] = stateAutoChangeModeValue;
     }
 
     if(stateConfig == "changeMode" && !err) {
         bool stateBuzzerValue = data["stateBuzzer"];
         bool stateFuzzyValue = data["stateFuzzy"];
         bool stateWiFiValue = data["stateWiFi"];
+        bool stateAutoChangeModeValue = data["stateAutoChangeMode"];
         data["stateFuzzy"] = stateFuzzyValue;
         data["stateBuzzer"] = stateBuzzerValue;
         data["stateWiFi"] = stateWiFiValue;
         data["stateChangeMode"] = value;
+        data["stateAutoChangeMode"] = stateAutoChangeModeValue;
+    }
+
+    if(stateConfig == "autoChangeMode" && !err) {
+        bool stateBuzzerValue = data["stateBuzzer"];
+        bool stateFuzzyValue = data["stateFuzzy"];
+        bool stateWiFiValue = data["stateWiFi"];
+        bool stateChangeModeValue = data["stateChangeMode"];
+        data["stateFuzzy"] = stateFuzzyValue;
+        data["stateBuzzer"] = stateBuzzerValue;
+        data["stateWiFi"] = stateWiFiValue;
+        data["stateChangeMode"] = stateChangeModeValue;
+        data["stateAutoChangeMode"] = value;
     }
 
     size_t serializeSize = measureJson(data);
