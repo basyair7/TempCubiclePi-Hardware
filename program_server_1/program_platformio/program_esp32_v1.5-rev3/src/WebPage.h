@@ -13,7 +13,9 @@ const char index_html[] PROGMEM = R"rawliteral(
 <body>
     <h4>Helper Page - TempCubiclePi %s <br /> %s </h4>
     <table border="1">
-        <caption>System Status</caption>
+        <thead>
+            <caption>System Status</caption>
+        </thead>
         <tbody>
             <!-- firmware version -->
             <tr>
@@ -27,10 +29,8 @@ const char index_html[] PROGMEM = R"rawliteral(
             </tr>
             <!-- firmware region -->
             <tr>
-                <th>
-                    <td>Firmware Region : </td>
-                    <td>%s</td>
-                </th>
+                <td>Firmware Region : </td>
+                <td>%s</td>
             </tr>
             <!-- Auto Change Mode -->
             <tr>
