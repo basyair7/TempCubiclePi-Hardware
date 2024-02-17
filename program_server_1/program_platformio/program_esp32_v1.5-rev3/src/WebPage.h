@@ -11,46 +11,80 @@ const char index_html[] PROGMEM = R"rawliteral(
     <title>Helper Page - TempCubiclePi %s</title>
 </head>
 <body>
-    <h4>Helper Page - TempCubiclePi %s <br /> %s </h4>
     <table border="1">
         <thead>
             <caption>System Status</caption>
         </thead>
         <tbody>
-            <!-- firmware version -->
+            <!-- Name Board -->
             <tr>
-                <td>Firmware Version : </td>
+                <td>Chipset Master </td>
+                <td>esp32doit-devkit-v1</td>
+            <tr>
+            <tr>
+                <td>Chipset Slave </td>
+                <td>Atmega328p</td>
+            <tr>
+            <!-- firmware version -->
+            <!-- hardware version -->
+            <tr>
+                <td>HW Version </td>
+                <td>%s</td>
+            </tr>
+            <!-- software version -->
+            <tr>
+                <td>SW Version </td>
                 <td>%s</td>
             </tr>
             <!-- build time -->
             <tr>
-                <td>Build Time : </td>
+                <td>Build Time </td>
                 <td>%s</td>
             </tr>
             <!-- firmware region -->
             <tr>
-                <td>Firmware Region : </td>
+                <td>Firmware Region </td>
                 <td>%s</td>
             </tr>
             <!-- Auto Change Mode -->
             <tr>
-                <td>Status Auto Change AP : </td>
+                <td>Status Auto Change AP </td>
                 <td>%s</td>
             </tr>
 
             <!-- Fuzzy state -->
             <tr>
-                <td>Status Fuzzy  : </td>
+                <td>Status Fuzzy </td>
                 <td>%s</td>
             </tr>
 
             <!-- Buzzer state -->
             <tr>
-                <td>Status Buzzer : </td>
+                <td>Status Buzzer </td>
                 <td>%s</td>
             </tr>
         </tbody>
     </table>
+    <br />
+    <table border="1">
+        <thead>
+            <caption>WiFi Status</caption>
+        </thead>
+        <tbody>
+            <!-- SSID -->
+            <tr>
+                <td>SSID </td>
+                <td>%s</td>
+            </tr>
+            <!-- Password -->
+            <tr>
+                <td>Password </td>
+                <td>%s</td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- Link program -->
+    <br /><h4>%s</h4>
     <!-- Link 1 -->
     %s
     <!-- Link 2 -->

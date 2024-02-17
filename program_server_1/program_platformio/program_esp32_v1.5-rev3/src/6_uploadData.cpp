@@ -231,18 +231,16 @@ void server_setup(void) {
 
     // help configurate
     server.on("/help", []() {
-        String a_tags[19] = {
-            version,
-            version,
-            "<p> TCP server started : <a href=http://"+ String(ipAddress) +"/" + 
-                String(kodekubikel) +"> IPAddress : " + String(ipAddress)+"/"+
-            String(kodekubikel) + "</a></p>",
-            FIRMWAREVERSION,
-            BUILDTIME,
-            FIRMWAREREGION,
+        String a_tags[21] = {
+            version, version,
+            FIRMWAREVERSION, BUILDTIME, FIRMWAREREGION,
             String((SelfChangeMode == true ? "Enable" : "Disable")),
             String((stateFuzzy == true ? "Enable" : "Disable")),
             String((buzzerSwitch == true ? "Enable" : "Disable")),
+            loadSSID(), loadPassword(),
+            "<p> TCP server started : <a href=http://"+ String(ipAddress) +"/" + 
+                String(kodekubikel) +"> IPAddress : " + String(ipAddress)+"/"+
+            String(kodekubikel) + "</a></p>",
             "<p>1. Reset PZEM on Server : <a href=http://" + String(ipAddress) + "/resetpzem>http://"+ String(ipAddress) + "/resetpzem</a></p>",
             "<p>2. Restart Hardware on Server : <a href=http://"+ String(ipAddress) + "/restarthardware>http://"+ String(ipAddress) + "/restarthardware</a></p>",
             "<p>3. Disable Program Fuzzy : <a href=http://" + String(ipAddress) + "/disablefuzzy>http://"+ String(ipAddress) + "/disablefuzzy</a></p>",
