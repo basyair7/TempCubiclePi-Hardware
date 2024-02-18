@@ -124,53 +124,53 @@ const char index_html[] PROGMEM = R"rawliteral(
         <!-- Fuzzy Action -->
         <tr>
             <td><p>1. Program Fuzzy : </p></td>
-            <td>%s</td>
+            <td><p>%s</p></td>
         <tr>
         <!-- Buzzer Action -->
         <tr>
             <td><p>2. Buzzer Speaker : </p></td>
-            <td>%s</td>
+            <td><p>%s</p></td>
         </tr>
         <!-- Mode WiFi Action -->
         <tr>
             <td><p>3. Mode WiFi : </p></td>
-            <td>%s</td>
+            <td><p>%s</p></td>
         </tr>
         <!-- Auto Change Mode WiFi Action -->
         <tr>
             <td><p>4. Auto Change Mode WiFi : </p></td>
-            <td>%s</td>
+            <td><p>%s</p></td>
         </tr>
         <!-- Rename Kode Kubikel -->
         <tr>
             <td><p>5. Rename Kubikel Code : </p></td>
-            <td>%s</td>
+            <td><p>%s</p></td>
         </tr>
         <!-- Configurate WiFi -->
         <tr>
             <td><p>6. Configuration WiFi : </p></td>
-            <td>%s</td>
+            <td><p>%s</p></td>
         </tr>
         <!-- Configurate Access Point -->
         <tr>
             <td><p>7. Configuration Access Point : </p></td>
-            <td>%s</td>
+            <td><p>%s</p></td>
         </tr>
 
         <!-- Firmware Update -->
         <tr>
             <td><p>8. Update Firmware ESP : </p></td>
-            <td>%s</td
+            <td><p>%s</p></td>
         </tr>
         <!-- Reset Hardware Action -->
         <tr>
             <td><p>9. Restart Hardware on Server : </p>
-            <td>%s</td>
+            <td><p>%s</p></td>
         </tr>
         <!-- Reset PZEM Action -->
         <tr>
             <td><p>10. Reset PZEM on Server : </p></td>
-            <td>%s</td>
+            <td><p>%s</p></td>
         </tr>
         <tr>
             <td>
