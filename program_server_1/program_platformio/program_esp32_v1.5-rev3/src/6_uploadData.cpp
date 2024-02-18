@@ -411,7 +411,7 @@ void server_setup(void) {
             String((stateFuzzy == true ? "Enable" : "Disable")),
             String((buzzerSwitch == true ? "Enable" : "Disable")),
             ipAddress, String((wifi_AP_mode == true ? "Access Point" : "Client WiFi")), APName, APPassword, ssid, password,
-            "<p> TCP server started : <a href=http://"+ String(ipAddress) +"/" + String(kodekubikel) +" target='_blank'> IPAddress : " + String(ipAddress) + "/" + String(kodekubikel) + "</a></p>",
+            "<p> TCP server started : <a href=http://"+ String(ipAddress) +"/" + String(kodekubikel) +" target='_blank'> http://" + String(ipAddress) + "/" + String(kodekubikel) + "</a></p>",
             "<p>1. Program Fuzzy : <a href=http://" + String(ipAddress) + "/enablefuzzy target='_blank'>Enable</a> / <a href=http://" + String(ipAddress) + "/disablefuzzy target='_blank'>Disable</a></p>",
             "<p>2. Buzzer Speaker : <a href=http://" + String(ipAddress) + "/enablebuzzer target='_blank'>Enable</a> / <a href=http://" + String(ipAddress) + "/disablebuzzer target='_blank'>Disable</a></p>",
             "<p>3. Mode WiFi : <a href=http://" + String(ipAddress) + "/apmode target='_blank'>Access Point</a> / <a href=http://" + String(ipAddress) + "/clientmode target='_blank'>Client WiFi</a></p>",
