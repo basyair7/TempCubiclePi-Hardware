@@ -211,7 +211,7 @@ const char success_save_rename_kodekubikel[] PROGMEM = R"rawliteral(
         </thead>
         <tbody>
             <tr>
-                <td>New Code </td>
+                <td>New Code : </td>
                 <td>%s</td>
             </tr>
             <tr>
@@ -270,11 +270,11 @@ const char config_wifi_2[] PROGMEM = R"rawliteral(
                     <caption>Old Configuration : </caption>
                 </tr>
                 <tr>
-                    <td>SSID </td>
+                    <td>SSID : </td>
                     <td>%s</td>
                 </tr>
                 <tr>
-                    <td>Password </td>
+                    <td>Password : </td>
                     <td>%s</td>
                 </tr>
                 <br />
@@ -282,11 +282,11 @@ const char config_wifi_2[] PROGMEM = R"rawliteral(
                     <caption>New Configuration : </caption>
                 </tr>
                 <tr>
-                    <td>SSID </td>
+                    <td>New SSID : </td>
                     <td><input type='text' name='newssid'></td>
                 </tr>
                 <tr>
-                    <td>Password </td>
+                    <td>New Password : </td>
                     <td><input type='password' name='newpassword'></td>
                 </tr>
                 <tr>
@@ -323,11 +323,11 @@ const char success_save_config_wifi[] PROGMEM = R"rawliteral(
         </thead>
         <tbody>
             <tr>
-                <td>New WiFi SSID </td>
+                <td>New WiFi SSID : </td>
                 <td>%s</td>
             </tr>
             <tr>
-                <td>New WiFi Password </td>
+                <td>New WiFi Password : </td>
                 <td>%s</td>
             </tr>
             <tr>
@@ -364,11 +364,11 @@ const char config_ap[] PROGMEM = R"rawliteral(
                     <caption>Old Configuration : </caption>
                 </tr>
                 <tr>
-                    <td>Access Point Name </td>
+                    <td>Access Point Name : </td>
                     <td>%s</td>
                 </tr>
                 <tr>
-                    <td>Password </td>
+                    <td>Password : </td>
                     <td>%s</td>
                 </tr>
                 <br />
@@ -376,11 +376,11 @@ const char config_ap[] PROGMEM = R"rawliteral(
                     <caption>New Configuration : </caption>
                 </tr>
                 <tr>
-                    <td>Name AP </td>
+                    <td>New AP Name : </td>
                     <td><input type='text' name='newap'></td>
                 </tr>
                 <tr>
-                    <td>Password </td>
+                    <td>New Password : </td>
                     <td><input type='password' name='newpassword'></td>
                 </tr>
                 <tr>
@@ -417,11 +417,11 @@ const char success_save_config_ap[] PROGMEM = R"rawliteral(
         </thead>
         <tbody>
             <tr>
-                <td>New AP Name </td>
+                <td>New AP Name : </td>
                 <td>%s</td>
             </tr>
             <tr>
-                <td>New AP Password </td>
+                <td>New AP Password : </td>
                 <td>%s</td>
             </tr>
             <tr>
