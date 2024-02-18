@@ -161,8 +161,10 @@ void server_setup(void) {
     server.on("/enableautochangemodewifi", []() {
         page = "{\"auto_changeMode\": \""+String(1)+"\", \"reason\": \""+String("Auto Change Mode WiFi AP has been enable....")+"\"}";
         server.send(200, "text/plain", page);
-        buzzerSwitch = true;
         saveConfig("autoChangeMode", true);
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(1000);
+        digitalWrite(LED_BUILTIN, HIGH);
         page = "";
     });
 
@@ -170,8 +172,10 @@ void server_setup(void) {
     server.on("/disableautochangemodewifi", []() {
         page = "{\"auto_changeMode\": \""+String(0)+"\", \"reason\": \""+String("Auto Change Mode WiFi AP has been disable....")+"\"}";
         server.send(200, "text/plain", page);
-        buzzerSwitch = true;
         saveConfig("autoChangeMode", false);
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(1000);
+        digitalWrite(LED_BUILTIN, HIGH);
         page = "";
     });
 
@@ -276,6 +280,9 @@ void server_setup(void) {
         saveConfig("changeMode", true);
         page = "{\"changeMode\": \""+String(1)+"\", \"reason\": \""+String("Mode AP Success..")+"\"}";
         server.send(200, "text/javascript", page);
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(1000);
+        digitalWrite(LED_BUILTIN, HIGH);
         page = "";
     });
 
@@ -284,6 +291,9 @@ void server_setup(void) {
         saveConfig("changeMode", false);
         page = "{\"changeMode\": \""+String(0)+"\", \"reason\": \""+String("Mode Client Success..")+"\"}";
         server.send(200, "text/javascript", page);
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(1000);
+        digitalWrite(LED_BUILTIN, HIGH);
         page = "";
     });
 
