@@ -378,7 +378,7 @@ void server_setup(void) {
         // menggunakan sprintf untuk menggabungkan element a_tags ke rename_kodekubikel_page
         sprintf(
             rename_kodekubikel_page, rename_kodekubikel,
-            a_tags[0], a_tags[1], a_tags[2], a_tags[3]
+            a_tags[0].c_str(), a_tags[1].c_str(), a_tags[2].c_str(), a_tags[3].c_str()
         );
 
         // kirim ke server
@@ -403,7 +403,7 @@ void server_setup(void) {
         sprintf(
             success_save_page, 
             success_save_rename_kodekubikel, 
-            a_tags[0], a_tags[1], a_tags[2]
+            a_tags[0].c_str(), a_tags[1].c_str(), a_tags[2].c_str()
         );
 
         // kirim ke server
