@@ -120,64 +120,29 @@ const char index_html[] PROGMEM = R"rawliteral(
     </table>
     <!-- Link program -->
     <br /><h4>%s</h4>
-    <table border="1">
-        <!-- Fuzzy Action -->
-        <tr>
-            <td><p>1. Program Fuzzy : </p></td>
-            <td><p>%s</p></td>
-        <tr>
-        <!-- Buzzer Action -->
-        <tr>
-            <td><p>2. Buzzer Speaker : </p></td>
-            <td><p>%s</p></td>
-        </tr>
-        <!-- Mode WiFi Action -->
-        <tr>
-            <td><p>3. Mode WiFi : </p></td>
-            <td><p>%s</p></td>
-        </tr>
-        <!-- Auto Change Mode WiFi Action -->
-        <tr>
-            <td><p>4. Auto Change Mode WiFi : </p></td>
-            <td><p>%s</p></td>
-        </tr>
-        <!-- Rename Kode Kubikel -->
-        <tr>
-            <td><p>5. Rename Kubikel Code : </p></td>
-            <td><p>%s</p></td>
-        </tr>
-        <!-- Configurate WiFi -->
-        <tr>
-            <td><p>6. Configuration WiFi : </p></td>
-            <td><p>%s</p></td>
-        </tr>
-        <!-- Configurate Access Point -->
-        <tr>
-            <td><p>7. Configuration Access Point : </p></td>
-            <td><p>%s</p></td>
-        </tr>
-
-        <!-- Firmware Update -->
-        <tr>
-            <td><p>8. Update Firmware ESP : </p></td>
-            <td><p>%s</p></td>
-        </tr>
-        <!-- Reset Hardware Action -->
-        <tr>
-            <td><p>9. Restart Hardware on Server : </p>
-            <td><p>%s</p></td>
-        </tr>
-        <!-- Reset PZEM Action -->
-        <tr>
-            <td><p>10. Reset PZEM on Server : </p></td>
-            <td><p>%s</p></td>
-        </tr>
-        <tr>
-            <td>
-                <p><b>Powered By : <a href=https://github.com/basyair7 target='_blank'>Basyair7</a></b></p>
-            </td>
-        </tr>
-    </table>
+    <!-- Fuzzy Action -->
+    %s
+    <!-- Buzzer Action -->
+    %s
+    <!-- Mode WiFi Action -->
+    %s
+    <!-- Auto Change Mode WiFi Action -->
+    %s
+    <!-- Rename Kode Kubikel -->
+    %s
+    <!-- Configurate WiFi -->
+    %s
+    <!-- Configurate Kubikel Code -->
+    %s
+    <!-- Firmware Update -->
+    %s
+    <!-- Reset Hardware Action -->
+    %s
+    <!-- Reset PZEM Action -->
+    %s
+    
+    <p><b>Powered By : <a href=https://github.com/basyair7 target='_blank'>Basyair7</a></b></p>
+    
 </body>
 </html>
 )rawliteral";
@@ -197,19 +162,16 @@ const char rename_kodekubikel[] PROGMEM = R"rawliteral(
     <form method='POST' action='/save-rename-kodekubikel'>
         <table>
             <thead>
-                <caption><b>Rename Kubikel Code </b></caption>
+                <caption><b>Old Kubikel Code : </b></caption>
             </thead>
             <tbody>
-                <tr>
-                    <caption>Old Kubikel Code : </caption>
-                </tr>
                 <tr>
                     <td>Code : </td>
                     <td>%s</td>
                 </tr>
                 <br />
                 <tr>
-                    <caption>Rename : </caption>
+                    <caption><b>Rename : </b></caption>
                 </tr>
                 <tr>
                     <td>Code : </td>
@@ -249,7 +211,7 @@ const char success_save_rename_kodekubikel[] PROGMEM = R"rawliteral(
         </thead>
         <tbody>
             <tr>
-                <td>New Code : </td>
+                <td>New Code </td>
                 <td>%s</td>
             </tr>
             <tr>
@@ -301,18 +263,18 @@ const char config_wifi_2[] PROGMEM = R"rawliteral(
     <form method='POST' action='/config-wifi-save'>
         <table>
             <thead>
-                <caption><b>Setup WiFi Client</b></caption>
+                <caption><b>Setup WiFi Client : </b></caption>
             </thead>
             <tbody>
                 <tr>
-                    <caption>Old WiFi Configuration : </caption>
+                    <caption>Old Configuration : </caption>
+                </tr>
                 <tr>
-                <tr>
-                    <td>SSID : </td>
+                    <td>SSID </td>
                     <td>%s</td>
                 </tr>
                 <tr>
-                    <td>Password  : </td>
+                    <td>Password </td>
                     <td>%s</td>
                 </tr>
                 <br />
@@ -395,12 +357,12 @@ const char config_ap[] PROGMEM = R"rawliteral(
     <form method='POST' action='/config-ap-save'>
         <table>
             <thead>
-                <caption><b>Setup Access Point </b></caption>
+                <caption><b>Setup Access Point WiFi : </b></caption>
             </thead>
             <tbody>
                 <tr>
-                    <caption>Old Access Point WiFi : </caption>
-                <tr>
+                    <caption>Old Configuration : </caption>
+                </tr>
                 <tr>
                     <td>Access Point Name </td>
                     <td>%s</td>

@@ -412,16 +412,18 @@ void server_setup(void) {
             String((buzzerSwitch == true ? "Enable" : "Disable")),
             ipAddress, String((wifi_AP_mode == true ? "Access Point" : "Client WiFi")), APName, APPassword, ssid, password,
             "<p> TCP server started : <a href=http://"+ String(ipAddress) +"/" + String(kodekubikel) +" target='_blank'> IPAddress : " + String(ipAddress) + "/" + String(kodekubikel) + "</a></p>",
-            "<a href=http://" + String(ipAddress) + "/enablefuzzy target='_blank'>Enable</a> / <a href=http://" + String(ipAddress) + "/disablefuzzy target='_blank'>Disable</a>",
-            "<a href=http://" + String(ipAddress) + "/enablebuzzer target='_blank'>Enable</a> / <a href=http://" + String(ipAddress) + "/disablebuzzer target='_blank'>Disable</a>",
-            "<a href=http://" + String(ipAddress) + "/apmode target='_blank'>Access Point</a> / <a href=http://" + String(ipAddress) + "/clientmode target='_blank'>Client WiFi</a>",
-            "<a href=http://"+ String(ipAddress) + "/enableautochangemodewifi target='_blank'>Enable</a> / <a href=http://"+ String(ipAddress) + "/disableautochangemodewifi target='_blank'>Disable</a>",
-            "<a href=http://" + String(ipAddress) + "/rename-kodekubikel >Run</a><",
-            "<a href=http://" + String(ipAddress) + "/config-wifi" + String((WiFi.getMode() != WIFI_AP ? " onclick=\"return confirm('Server akan direstart dan beralih mode WiFi AP... tetap dilanjutkan?')\" >" : " >")) + "Run</a>",
-            "<a href=http://" + String(ipAddress) + "/config-ap >Run</a>",
-            "<a href=http://" + String(ipAddress) + "/update target='_blank'>Update</a>"
-            "<a href=http://"+ String(ipAddress) + "/restarthardware target='_blank'>Run</a>",
-            "<a href=http://" + String(ipAddress) + "/resetpzem target='_blank'>Run</a></p>"
+            "<p>1. Program Fuzzy : <a href=http://" + String(ipAddress) + "/enablefuzzy target='_blank'>Enable</a> / <a href=http://" + String(ipAddress) + "/disablefuzzy target='_blank'>Disable</a></p>",
+            "<p>2. Buzzer Speaker : <a href=http://" + String(ipAddress) + "/enablebuzzer target='_blank'>Enable</a> / <a href=http://" + String(ipAddress) + "/disablebuzzer target='_blank'>Disable</a></p>",
+            "<p>3. Mode WiFi : <a href=http://" + String(ipAddress) + "/apmode target='_blank'>Access Point</a> / <a href=http://" + String(ipAddress) + "/clientmode target='_blank'>Client WiFi</a></p>",
+            "<p>4. Auto Change Mode WiFi : <a href=http://"+ String(ipAddress) + "/enableautochangemodewifi target='_blank'>Enable</a> / <a href=http://"+ String(ipAddress) + "/disableautochangemodewifi target='_blank'>Disable</a></p>",
+            "<p>5. Rename Kubikel Code : <a href=http://" + String(ipAddress) + "/rename-kodekubikel >Run</a></p>",
+            "<p>6. Configuration WiFi : <a href=http://" + String(ipAddress) + "/config-wifi"+
+                String((WiFi.getMode() != WIFI_AP ? " onclick=\"return confirm('Server akan direstart dan beralih mode WiFi AP... tetap dilanjutkan?')\" >" : " >"))+
+            "Run</a></p>",
+            "<p>7. Configuration Access Point : <a href=http://" + String(ipAddress) + "/config-ap >Run</a>",
+            "<p>8. Update Firmware ESP : <a href=http://" + String(ipAddress) + "/update target='_blank'>Update</a></p>"
+            "<p>9. Restart Hardware on Server : <a href=http://"+ String(ipAddress) + "/restarthardware target='_blank'>Run</a></p>",
+            "<p>10. Reset PZEM on Server : <a href=http://" + String(ipAddress) + "/resetpzem target='_blank'>Run</a></p>"
         };
 
         // menghitung ukuran buffer
