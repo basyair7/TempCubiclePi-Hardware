@@ -186,8 +186,8 @@ void server_setup(void) {
         if(WiFi.getMode() != WIFI_AP) {
             String a_tags[6] = {
                 version, version,
-                kodekubikel, STASSID, STAPSK,
-                STASSID
+                kodekubikel, APName, APPassword,
+                APName
             };
 
             // menghitung ukuran buffer
