@@ -16,5 +16,6 @@
         "streambuf": "cpp",
         "cmath": "cpp",
         "freertos.h": "c"
-    }
+    },
+    "cmake.sourceDirectory": "/media/ahul7/data/Electrical Engineering (Data Kuliah Ahul)/Project_Kubikel_Gardu_Distribusi/Hardware-Public/program_server_1/program_platformio/program_esp32_v1.5-rev3/lib/ArduinoJson"
 }

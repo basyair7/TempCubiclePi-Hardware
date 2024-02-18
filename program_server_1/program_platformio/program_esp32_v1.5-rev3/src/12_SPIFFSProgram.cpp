@@ -145,49 +145,97 @@ void saveConfig(String stateConfig, bool value) {
     configFileUpdate.close();
 }
 
+// Save Client WiFi
 void saveConfigWiFi(String ssid, String password) {
-    DynamicJsonDocument config(500);
+    DynamicJsonDocument config(100);
     config["ssid"] = String(ssid);
     config["password"] = String(password);
     File configFileWiFi = SPIFFS.open("/config/configwifi.json", "w");
     if (!configFileWiFi) {
-        Serial.println(F("\nFailed to open config file for writing"));
+        Serial.println(F("\nFailed to open config WiFi for writing"));
         return;
     }
     serializeJson(config, configFileWiFi);
     configFileWiFi.close();
 }
 
-// load config WiFi
-String loadConfigWiFi() {
-    if(!SPIFFS.begin(true)) {
-        Serial.println(F("\nFailed to mount SPIFFS"));
-        return "";
+// Save Access Point WiFi
+void saveConfigAP(String ssid, String password) {
+    DynamicJsonDocument config(100);
+    config["ssid"] = String(ssid);
+    config["password"] = String(password);
+    File configFileWiFi = SPIFFS.open("/config/configAP.json", "w");
+    if (!configFileWiFi) {
+        Serial.println(F("\nFailed to open config Access Point for writing"));
+        return;
     }
-    if(!SPIFFS.exists("/config/configwifi.json")) {
-        Serial.println(F("\nfile configwifi.json not found"));
-        return "";
-    }
+    serializeJson(config, configFileWiFi);
+    configFileWiFi.close();
+}
 
-    File wifiSSIDconfigFile = SPIFFS.open("/config/configwifi.json", "r");
-    if(!wifiSSIDconfigFile) {
+String loadAPName() {
+    File wifiPSKconfigFile = SPIFFS.open("/config/configAP.json", "r");
+    if(!wifiPSKconfigFile) {
+        Serial.println(F("\nFailed to open config file AP Name"));
+        return "";
+    }
+    size_t size = wifiPSKconfigFile.size();
+    std::unique_ptr<char[]> buf(new char[size]);
+    wifiPSKconfigFile.readBytes(buf.get(), size);
+    wifiPSKconfigFile.close();
+    DynamicJsonDocument data(50);
+    DeserializationError err = deserializeJson(data, buf.get());
+    if(!err) {
+        String value = data["ssid"];
+        return value;
+    }
+    else {
+        Serial.println(F("\nFailed to load AP Name"));
+        return "";
+    }
+}
+
+String loadAPPassword() {
+    File wifiPSKconfigFile = SPIFFS.open("/config/configAP.json", "r");
+    if(!wifiPSKconfigFile) {
+        Serial.println(F("\nFailed to open config file AP Password"));
+        return "";
+    }
+    size_t size = wifiPSKconfigFile.size();
+    std::unique_ptr<char[]> buf(new char[size]);
+    wifiPSKconfigFile.readBytes(buf.get(), size);
+    wifiPSKconfigFile.close();
+    DynamicJsonDocument data(50);
+    DeserializationError err = deserializeJson(data, buf.get());
+    if(!err) {
+        String value = data["password"];
+        return value;
+    }
+    else {
+        Serial.println(F("\nFailed to load AP Password"));
+        return "";
+    }
+}
+
+// load config Client WiFi
+String loadSSID() {
+    File wifiPSKconfigFile = SPIFFS.open("/config/configwifi.json", "r");
+    if(!wifiPSKconfigFile) {
         Serial.println(F("\nFailed to open config file"));
         return "";
     }
-
-    size_t size = wifiSSIDconfigFile.size();
+    size_t size = wifiPSKconfigFile.size();
     std::unique_ptr<char[]> buf(new char[size]);
-    wifiSSIDconfigFile.readBytes(buf.get(), size);
-    
-    DynamicJsonDocument data(500);
+    wifiPSKconfigFile.readBytes(buf.get(), size);
+    wifiPSKconfigFile.close();
+    DynamicJsonDocument data(50);
     DeserializationError err = deserializeJson(data, buf.get());
-    wifiSSIDconfigFile.close();
-    
     if(!err) {
-        return data["ssid"], data["password"];
+        String value = data["ssid"];
+        return value;
     }
     else {
-        Serial.println(F("\nFailed to load SSID and Password"));
+        Serial.println(F("\nFailed to load SSID"));
         return "";
     }
 }
@@ -202,7 +250,7 @@ String loadPassword() {
     std::unique_ptr<char[]> buf(new char[size]);
     wifiPSKconfigFile.readBytes(buf.get(), size);
     wifiPSKconfigFile.close();
-    DynamicJsonDocument data(200);
+    DynamicJsonDocument data(50);
     DeserializationError err = deserializeJson(data, buf.get());
     if(!err) {
         String value = data["password"];
@@ -214,24 +262,38 @@ String loadPassword() {
     }
 }
 
-String loadSSID() {
-    File wifiPSKconfigFile = SPIFFS.open("/config/configwifi.json", "r");
-    if(!wifiPSKconfigFile) {
-        Serial.println(F("\nFailed to open config file"));
+// save kubikel code
+void saveKubikelCode(String code) {
+    DynamicJsonDocument config(50);
+    config["kubikelcode"] = String(code);
+    File configFile = SPIFFS.open("/config/kubikelcode.json", "w");
+    if (!configFile) {
+        Serial.println(F("\nFailed to open config file for writing"));
+        return;
+    }
+    serializeJson(config, configFile);
+    configFile.close();
+}
+
+// load kubikel code
+String loadKubikelCode() {
+    File configFile = SPIFFS.open("/config/kubikelcode.json", "r");
+    if(!configFile) {
+        Serial.println(F("\nFailed to open config file load kubikel"));
         return "";
     }
-    size_t size = wifiPSKconfigFile.size();
+    size_t size = configFile.size();
     std::unique_ptr<char[]> buf(new char[size]);
-    wifiPSKconfigFile.readBytes(buf.get(), size);
-    wifiPSKconfigFile.close();
-    DynamicJsonDocument data(200);
+    configFile.readBytes(buf.get(), size);
+    configFile.close();
+    DynamicJsonDocument data(50);
     DeserializationError err = deserializeJson(data, buf.get());
     if(!err) {
-        String value = data["ssid"];
+        String value = data["kubikelcode"];
         return value;
     }
     else {
-        Serial.println(F("\nFailed to load SSID"));
+        Serial.println(F("\nFailed to load kubikel code"));
         return "";
     }
 }

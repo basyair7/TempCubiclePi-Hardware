@@ -7,14 +7,15 @@
 #include "1_configProgram.h"
 
 // deklarasi variabel millis waktu sebelum jalannya program
-uint64_t waktuSebelum_1 = 0, waktuSebelum_2 = 0, waktuSebelum_3 = 0, waktuSebelum_4 = 0;
-uint64_t lastPushButton = 0, PushButtonDelay = 50;
-int count = 0;
+unsigned long waktuSebelum_1 = 0, waktuSebelum_2 = 0, waktuSebelum_3 = 0, waktuSebelum_4 = 0;
+unsigned long lastPushButton = 0;
+uint8_t count = 0, PushButtonDelay = 50;
+String kodekubikel;
 bool SelfChangeMode = false;
 
 void funcMain(void)
 {
-    uint64_t waktuSekarang = millis();
+    unsigned long waktuSekarang = millis();
     if (waktuSekarang - waktuSebelum_1 >= interval_1)
     {
         waktuSebelum_1 = waktuSekarang;
@@ -109,6 +110,8 @@ void setupProgramPushButton(void)
 
 void programReadSPIFFS(void)
 {
+    if(loadKubikelCode() == "") saveKubikelCode(defaultkodekubikel);
+    kodekubikel = loadKubikelCode();
     stateFuzzy = readConfig("fuzzy");
     buzzerSwitch = readConfig("buzzer");
     stateWiFiProgram = readConfig("wifi");

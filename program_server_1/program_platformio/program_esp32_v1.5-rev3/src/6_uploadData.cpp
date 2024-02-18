@@ -14,14 +14,14 @@
 #include "WebPage.h"
 
 // buat fungsi mengirim data
-uint64_t waktuSebelum_uploadData = 0;
+unsigned long waktuSebelum_uploadData = 0;
 bool mDNSESPReady = false;
 
 void send_data(String kodekubikel_input, 
 float tegangan_input, float arus_input, float daya_input, float pF_input, float energy_input, float freq_input,
 float temp_input, float hum_input, float dimmerHeater, float fisOutputHeater, float dimmerFan, float fisOutputFan)
 {
-    uint64_t waktuSekarang = millis();
+    unsigned long waktuSekarang = millis();
     if (waktuSekarang - waktuSebelum_uploadData >= interval_uploadData) {
         waktuSebelum_uploadData = waktuSekarang;
         // buat object DynamicJsonDocument data
@@ -177,31 +177,62 @@ void server_setup(void) {
 
     //9. config WiFi server
     server.on("/config-wifi", HTTP_GET, []() {
+
         bool resetESP = false;
-        String html = "<!DOCTYPE>\r\n<html>\r\n<head>\r\n<meta charset='utf-8'>\r\n<meta name='viewport' content='width=device-width, initial-scale=1.0'>\r\n";
-        html += "<meta name='description' content='configWiFi'>\r\n<meta name='author' content='PHPGurukul'>\r\n";
-        html += "<title>WiFi Configuration - TempCubiclePi "+String(version)+"</title>\r\n</head>\r\n";
-        html += "<body>\r\n<h4>WiFi Configuration - TempCubiclePi "+String(version)+"</h4>\r\n";
         if(WiFi.getMode() != WIFI_AP) {
-            html += "<p>Server kubikel " + String(kodekubikel) + " akan di restart dan ganti mode WIFI AP terlebih dahulu...<br /> silahkan koneksikan WiFi : " + String(STASSID) + " dan Password " + String(STAPSK) + "</p>\r\n";
-            html += "<p>Setelah terkoneksi ke WiFi " +String(STASSID)+ ", silahkan klik <a href=http://192.168.4.1 target='_blank'> Helper Page </a></p>\r\n";
+            String a_tags[6] = {
+                version, version,
+                kodekubikel, STASSID, STAPSK,
+                STASSID
+            };
+
+            // menghitung ukuran buffer
+            int buffer_size = sizeof(config_wifi_1);
+            for(uint8_t i = 0; i < 5; i++){
+                buffer_size += a_tags[i].length();
+            }
+            
+            // membuat typedata config_wifi_page untuk menyimpan hasil sprintf
+            char config_wifi_page[buffer_size];
+
+            // menggunakan sprintf untuk menggabungkan ke char config_wifi_1
+            sprintf(
+                config_wifi_page, config_wifi_1,
+                a_tags[0].c_str(), a_tags[1].c_str(), a_tags[2].c_str(),
+                a_tags[3].c_str(), a_tags[4].c_str(), a_tags[5].c_str()
+            );
+
             resetESP = true;
             saveConfig("changeMode", true);
-            
+
+            server.send(200, "text/html", config_wifi_page);
+
         } else {
-            html += "<p><b>Old WiFi Configuration</b></p>\r\n";
-            html += "<p><b> SSID : </b> " + String(loadSSID()) + "</p> \r\n";
-            html += "<p><b> Password : </b> "+ String(loadPassword()) + "</p><br /> \r\n";
-            html += "<form method='POST' action='/config-wifi-save'>\r\n";
-            html += "<p><b>New Configuration : </b></p>\r\n";
-            html += "<p>SSID: <input type='text' name='newssid'></p>\r\n";
-            html += "<p>Password: <input type='password' name='newpassword'></p><br>\r\n";
-            html += "<button type='submit' value='save'>Save</button>\r\n";
-            html += "</form>\r\n";
+            String a_tags[5] = {
+                version, version,
+                ssid, password,
+                ipAddress
+            };
+
+            // menghitung ukuran buffer
+            int buffer_size = sizeof(config_wifi_2);
+            for(uint8_t i = 0; i < 4; i++){
+                buffer_size += a_tags[i].length();
+            }
+
+            // membuat typedata config_wifi_page untuk menyimpan hasil sprintf
+            char config_wifi_page[buffer_size];
+            
+            // menggunakan sprintf untuk menggabungkan ke char config_wifi_2
+            sprintf(
+                config_wifi_page, config_wifi_2,
+                a_tags[0].c_str(), a_tags[1].c_str(), a_tags[2].c_str(),
+                a_tags[3].c_str(), a_tags[4].c_str()
+            );
+
+            server.send(200, "text/html", config_wifi_page);
         }
-        html += "<br><p><b>Powered by : <a href=https://github.com/basyair7 target='_blank'>Basyair7</a></b></p>\r\n";
-        html += "</body>\r\n</html>";
-        server.send(200, "text/html", html);
+
         delay(1000);
         if(resetESP) restartESP();
     });
@@ -215,63 +246,204 @@ void server_setup(void) {
         saveConfigWiFi(new_ssid, new_password);
         saveConfig("changeMode", false);
 
-        String html = "<!DOCTYPE html>\r\n<html>\r\n<head>\r\n<meta charset='utf-8'>\r\n<meta name='viewport' content='width=device-width, initial-scale=1.0'>\r\n";
-        html += "<meta name='description' content='configWiFi'>\r\n<meta name='author' content='PHPGurukul'>\r\n";
-        html += "<title>WiFi Configuration - TempCubiclePi "+String(version)+"</title>\r\n</head>\r\n";
-        html += "<body>\r\n<h4>WiFi Configuration - TempCubiclePi "+String(version)+"</h4>\r\n";
-        html += "<h4> Data telah di simpan </h4>\r\n";
-        html += "<p> WiFi SSID : " + String(new_ssid) + "</p>\r\n";
-        html += "<p> Password : " + String(new_password) + "</p>\r\n";
-        html += "<a href=http://"+String(ipAddress)+"/help>Kembali ke Menu</a>\r\n";
-        html += "<br><p><b>Powered by : <a href=https://github.com/basyair7 target='_blank'>Basyair7</a></b></p>\r\n";
-        html += "</body>\r\n</html>";
+        String a_tags[4] = {
+            version,
+            new_ssid, new_password,
+            ipAddress
+        };
 
-        server.send(200, "text/html", html);
+        // menghitung ukuran buffer
+        int buffer_size = sizeof(success_save_config_wifi);
+        for(uint8_t i = 0; i < 3; i++){
+            buffer_size += a_tags[i].length();
+        }
+
+        // membuat typedata config_wifi_page untuk menyimpan hasil sprintf
+        char config_wifi_page[buffer_size];
+
+        // menggunakan sprintf untuk menggabungkan element a_tags ke success_save_config_wifi
+        sprintf(
+            config_wifi_page, success_save_config_wifi,
+            a_tags[0].c_str(), a_tags[1].c_str(), a_tags[2].c_str(),
+            a_tags[3].c_str()
+        );
+
+        server.send(200, "text/html", config_wifi_page);
+    });
+
+    // 10. change mode
+    server.on("/apmode", []() {
+        saveConfig("changeMode", true);
+        page = "{\"changeMode\": \""+String(1)+"\", \"reason\": \""+String("Mode AP Success..")+"\"}";
+        server.send(200, "text/javascript", page);
+        page = "";
+    });
+
+    // 10. change mode
+    server.on("/clientmode", []() {
+        saveConfig("changeMode", false);
+        page = "{\"changeMode\": \""+String(0)+"\", \"reason\": \""+String("Mode Client Success..")+"\"}";
+        server.send(200, "text/javascript", page);
+        page = "";
+    });
+
+    // 11. change kubikel code
+    server.on("/config-ap", [](){
+        String a_tags[5] = {
+            version, version,
+            APName, APPassword,
+            ipAddress
+        };
+
+        // menghitung ukuran buffer
+        int buffer_size = sizeof(config_ap);
+        for(uint8_t i = 0; i < 4; i++) {
+            buffer_size += a_tags[i].length();
+        }
+
+        // membuat type data config_ap_page untuk menyimpan hasil sprintf
+        char config_ap_page[buffer_size];
+
+        // menggunakan sprintf untuk menggabungkan element a_tags ke config_ap
+        sprintf(
+            config_ap_page, config_ap,
+            a_tags[0].c_str(), a_tags[1].c_str(), a_tags[2].c_str(),
+            a_tags[3].c_str(),a_tags[4].c_str()
+        );
+
+        // kirim ke server
+        server.send(200, "text/html", config_ap_page);
+    });
+
+    server.on("/config-ap-save", HTTP_POST, [](){
+        String new_ap = server.arg("newap");
+        String new_password = server.arg("newpassword");
+        
+        // save to configap.json
+        saveConfigAP(new_ap, new_password);
+
+        String a_tags[4] = {
+            version,
+            new_ap, new_password,
+            ipAddress
+        };
+
+        // menghitung ukuran buffer
+        int buffer_size = sizeof(config_ap);
+        for(uint8_t i = 0; i < 3; i++) {
+            buffer_size += a_tags[i].length();
+        }
+
+        // membuat type data config_ap_page untuk menyimpan hasil sprintf
+        char config_ap_page[buffer_size];
+
+        // menggunakan sprintf untuk menggabungkan element a_tags ke config_ap
+        sprintf(
+            config_ap_page, success_save_config_ap,
+            a_tags[0].c_str(), a_tags[1].c_str(), a_tags[2].c_str(),
+            a_tags[3].c_str()
+        );
+
+        // kirim ke server
+        server.send(200, "text/html", config_ap_page);
+    });
+
+    // 12. rename kubikel code
+    server.on("/rename-kodekubikel", []() {
+        String a_tags[4] = {
+            version, version,
+            kodekubikel,
+            ipAddress
+        };
+
+        // menghitung ukuran buffer
+        int buffer_size = sizeof(rename_kodekubikel);
+        for(uint8_t i = 0; i < 3; i++) {
+            buffer_size += a_tags[i].length();
+        }
+
+        // membuat type data rename_kodekubikel_page untuk menyimpan hasil sprintf
+        char rename_kodekubikel_page[buffer_size];
+
+        // menggunakan sprintf untuk menggabungkan element a_tags ke rename_kodekubikel_page
+        sprintf(
+            rename_kodekubikel_page, rename_kodekubikel,
+            a_tags[0], a_tags[1], a_tags[2], a_tags[3]
+        );
+
+        // kirim ke server
+        server.send(200, "text/html", rename_kodekubikel_page);
+    });
+
+    server.on("/save-rename-kodekubikel", HTTP_POST, []() {
+        String new_code = server.arg("newcode");
+        saveKubikelCode(new_code);
+        String a_tags[3] = { version, new_code, ipAddress };
+
+        // menghitung ukuran buffer
+        int buffer_size = sizeof(success_save_rename_kodekubikel);
+        for(byte i = 0; i < 2; i++) {
+            buffer_size += a_tags[i].length();
+        }
+
+        // membuat type data success_save_page untuk menyimpan hasil sprintf
+        char success_save_page[buffer_size];
+
+        // meggunakan sprintf untuk menggabungkan element a_tags ke success_save_page
+        sprintf(
+            success_save_page, 
+            success_save_rename_kodekubikel, 
+            a_tags[0], a_tags[1], a_tags[2]
+        );
+
+        // kirim ke server
+        server.send(200, "text/html", success_save_page);
+        
     });
 
     // help configurate
     server.on("/help", []() {
-        String a_tags[21] = {
+        // masukkan element tag html ke dalam string c++
+        String a_tags[26] = {
             version, version,
-            FIRMWAREVERSION, BUILDTIME, FIRMWAREREGION,
+            FIRMWAREVERSION, BUILDTIME, FIRMWAREREGION, kodekubikel,
             String((SelfChangeMode == true ? "Enable" : "Disable")),
             String((stateFuzzy == true ? "Enable" : "Disable")),
             String((buzzerSwitch == true ? "Enable" : "Disable")),
-            loadSSID(), loadPassword(),
-            "<p> TCP server started : <a href=http://"+ String(ipAddress) +"/" + 
-                String(kodekubikel) +"> IPAddress : " + String(ipAddress)+"/"+
-            String(kodekubikel) + "</a></p>",
-            "<p>1. Reset PZEM on Server : <a href=http://" + String(ipAddress) + "/resetpzem>http://"+ String(ipAddress) + "/resetpzem</a></p>",
-            "<p>2. Restart Hardware on Server : <a href=http://"+ String(ipAddress) + "/restarthardware>http://"+ String(ipAddress) + "/restarthardware</a></p>",
-            "<p>3. Disable Program Fuzzy : <a href=http://" + String(ipAddress) + "/disablefuzzy>http://"+ String(ipAddress) + "/disablefuzzy</a></p>",
-            "<p>4. Enable Program Fuzzy : <a href=http://" + String(ipAddress) + "/enablefuzzy>http://"+ String(ipAddress) + "/enablefuzzy</a></p>",
-            "<p>5. Disable Buzzer Speaker : <a href=http://" + String(ipAddress) + "/disablebuzzer>http://"+ String(ipAddress) + "/disablebuzzer</a></p>",
-            "<p>6. Enable Buzzer Speaker : <a href=http://" + String(ipAddress) + "/enablebuzzer>http://"+ String(ipAddress) + "/enablebuzzer</a></p>",
-            "<p>7. Enable Auto Change Mode WiFi : <a href=http://"+ String(ipAddress) + "/enableautochangemodewifi>http://" + String(ipAddress) + "/enableautochangemodewifi</a></p>",
-            "<p>8. Disable Auto Change Mode WiFi : <a href=http://"+ String(ipAddress) + "/disableautochangemodewifi>http://" + String(ipAddress) + "/disableautochangemodewifi</a></p>",
-            "<p>9. Configuration WiFi : <a href=http://" + String(ipAddress) + "/config-wifi"+
-                String((WiFi.getMode() != WIFI_AP ? " onclick=\"return confirm('Server akan direstart dan beralih mode WiFi AP... tetap dilanjutkan?')\" target='_blank'>" : " target='_blank'>"))+
-            "http://"+ String(ipAddress) + "/config-wifi</a></p>",
-            "<p>10. Update Firmware ESP : <a href=http://" + String(ipAddress) + "/update target='_blank'>http://" + String(ipAddress) + "/update</p>"
+            ipAddress, String((wifi_AP_mode == true ? "Access Point" : "Client WiFi")), APName, APPassword, ssid, password,
+            "<p> TCP server started : <a href=http://"+ String(ipAddress) +"/" + String(kodekubikel) +" target='_blank'> IPAddress : " + String(ipAddress) + "/" + String(kodekubikel) + "</a></p>",
+            "<p>1. Program Fuzzy : <a href=http://" + String(ipAddress) + "/enablefuzzy target='_blank'>Enable</a> / <a href=http://" + String(ipAddress) + "/disablefuzzy target='_blank'>Disable</a></p>",
+            "<p>2. Buzzer Speaker : <a href=http://" + String(ipAddress) + "/enablebuzzer target='_blank'>Enable</a> / <a href=http://" + String(ipAddress) + "/disablebuzzer target='_blank'>Disable</a></p>",
+            "<p>3. Mode WiFi : <a href=http://" + String(ipAddress) + "/apmode target='_blank'>Access Point</a> / <a href=http://" + String(ipAddress) + "/clientmode target='_blank'>Client WiFi</a></p>",
+            "<p>4. Auto Change Mode WiFi : <a href=http://"+ String(ipAddress) + "/enableautochangemodewifi target='_blank'>Enable</a> / <a href=http://"+ String(ipAddress) + "/disableautochangemodewifi target='_blank'>Disable</a></p>",
+            "<p>5. Rename Kubikel Code : <a href=http://" + String(ipAddress) + "/rename-kodekubikel >Run</a></p>",
+            "<p>6. Configuration WiFi : <a href=http://" + String(ipAddress) + "/config-wifi"+
+                String((WiFi.getMode() != WIFI_AP ? " onclick=\"return confirm('Server akan direstart dan beralih mode WiFi AP... tetap dilanjutkan?')\" >" : " >"))+
+            "Run</a></p>",
+            "<p>7. Configuration Access Point : <a href=http://" + String(ipAddress) + "/config-ap >Run</a>",
+            "<p>8. Update Firmware ESP : <a href=http://" + String(ipAddress) + "/update >Update</a></p>"
+            "<p>9. Restart Hardware on Server : <a href=http://"+ String(ipAddress) + "/restarthardware target='_blank'>Run</a></p>",
+            "<p>10. Reset PZEM on Server : <a href=http://" + String(ipAddress) + "/resetpzem target='_blank'>Run</a></p>"
         };
 
         // menghitung ukuran buffer
         int buffer_size = sizeof(index_html);
-        for(int i = 0; i < 18; i++) {
+        for(uint8_t i = 0; i < 25; i++) {
             buffer_size += a_tags[i].length();
         }
 
         // membuat typedata helpPage untuk menyimpan hasil sprintf
         char helpPage[buffer_size];
 
-        // menggunakan sprintf untuk menggabungkan string
+        // menggunakan sprintf untuk menggabungkan ke char index_html
         sprintf(
             helpPage, index_html,
             a_tags[0].c_str(), a_tags[1].c_str(), a_tags[2].c_str(), a_tags[3].c_str(), a_tags[4].c_str(),
             a_tags[5].c_str(), a_tags[6].c_str(), a_tags[7].c_str(), a_tags[8].c_str(), a_tags[9].c_str(),
             a_tags[10].c_str(), a_tags[11].c_str(), a_tags[12].c_str(), a_tags[13].c_str(), a_tags[14].c_str(),
-            a_tags[15].c_str(), a_tags[16].c_str(), a_tags[17].c_str(), a_tags[18].c_str()
-            
+            a_tags[15].c_str(), a_tags[16].c_str(), a_tags[17].c_str(), a_tags[18].c_str(), a_tags[19].c_str(),
+            a_tags[20].c_str(), a_tags[21].c_str(), a_tags[22].c_str(), a_tags[23].c_str(), a_tags[24].c_str(),
+            a_tags[25].c_str()
         );
 
         server.send(200, "text/html", helpPage);

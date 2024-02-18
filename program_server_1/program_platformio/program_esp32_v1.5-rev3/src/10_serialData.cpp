@@ -6,7 +6,7 @@
 #include <ArduinoJson.h>
 #include "1_configProgram.h"
 
-int callback_1, callback_4;
+byte callback_1, callback_4;
 void sendDataESP(void) {
     // buat object DynamicJsonDocument data
     DynamicJsonDocument data(500);

@@ -9,11 +9,13 @@ const char index_html[] PROGMEM = R"rawliteral(
     <meta name="description" content="configWiFi">
     <meta name="author" content="basyair7">
     <title>Helper Page - TempCubiclePi %s</title>
+    <style>
+    </style>
 </head>
 <body>
     <table border="1">
         <thead>
-            <caption>System Status</caption>
+            <caption><b>System Status</b></caption>
         </thead>
         <tbody>
             <!-- Name Board -->
@@ -46,12 +48,18 @@ const char index_html[] PROGMEM = R"rawliteral(
                 <td>Firmware Region </td>
                 <td>%s</td>
             </tr>
+
+            <!-- cubicle code -->
+            <tr>
+                <td>Kubikle Code </td>
+                <td>%s</td>
+            </tr>
+
             <!-- Auto Change Mode -->
             <tr>
                 <td>Status Auto Change AP </td>
                 <td>%s</td>
             </tr>
-
             <!-- Fuzzy state -->
             <tr>
                 <td>Status Fuzzy </td>
@@ -68,12 +76,28 @@ const char index_html[] PROGMEM = R"rawliteral(
     <br />
     <table border="1">
         <thead>
-            <caption>WiFi Status</caption>
+            <caption><b>WiFi Status</b></caption>
         </thead>
         <tbody>
-            <!-- SSID -->
+            <!-- Chipset -->
             <tr>
-                <td>SSID </td>
+                <td>Chipset WiFi </td>
+                <td>ESP32 Board</td>
+            </tr>
+            <!-- IP Address -->
+            <tr>
+                <td>IP Address </td>
+                <td>%s</td>
+            </tr>
+            <!-- Mode WiFi -->
+            <tr>
+                <td>Mode WiFi </td>
+                <td>%s</td>
+            </tr>
+
+            <!-- AP MODE -->
+            <tr>
+                <td>AP Name </td>
                 <td>%s</td>
             </tr>
             <!-- Password -->
@@ -81,34 +105,333 @@ const char index_html[] PROGMEM = R"rawliteral(
                 <td>Password </td>
                 <td>%s</td>
             </tr>
+
+            <!-- SSID WiFi -->
+            <tr>
+                <td>SSID WiFi </td>
+                <td>%s</td>
+            </tr>
+            <!-- Password -->
+            <tr>
+                <td>Password WiFi </td>
+                <td>%s</td>
+            </tr>
         </tbody>
     </table>
     <!-- Link program -->
     <br /><h4>%s</h4>
-    <!-- Link 1 -->
+    <!-- Fuzzy Action -->
     %s
-    <!-- Link 2 -->
+    <!-- Buzzer Action -->
     %s
-    <!-- Link 3 -->
+    <!-- Mode WiFi Action -->
     %s
-    <!-- Link 4 -->
+    <!-- Auto Change Mode WiFi Action -->
     %s
-    <!-- Link 5 -->
+    <!-- Rename Kode Kubikel -->
     %s
-    <!-- Link 6 -->
+    <!-- Configurate WiFi -->
     %s
-    <!-- Link 7 -->
+    <!-- Configurate Kubikel Code -->
     %s
-    <!-- Link 8 -->
+    <!-- Firmware Update -->
     %s
-    <!-- Link 9 -->
+    <!-- Reset Hardware Action -->
     %s
-    <!-- Link 10 -->
+    <!-- Reset PZEM Action -->
     %s
-
-    <br />
+    
     <p><b>Powered By : <a href=https://github.com/basyair7 target='_blank'>Basyair7</a></b></p>
     
+</body>
+</html>
+)rawliteral";
+
+const char rename_kodekubikel[] PROGMEM = R"rawliteral(
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta name='description' content='rename-kodekubikel'>
+    <meta name='author' content='basyair7'>
+    <title>Rename Kubikel Code - TempCubiclePi %s </title>
+</head>
+<body>
+    <h4>Rename Kubikel Code - TempCubiclePi %s </h4>
+    <form method='POST' action='/save-rename-kodekubikel'>
+        <table>
+            <thead>
+                <caption><b>Old Kubikel Code : </b></caption>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Code : </td>
+                    <td>%s</td>
+                </tr>
+            </tbody>
+            <br />
+            <thead>
+                <caption><b>Rename : </b></caption>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Code : </td>
+                    <td><input type='text' name='newcode'></td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td><button type='submit' value='save'>Save</button></td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td><a href=http://%s/help>Kembali ke Menu</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+
+    <br><p><b>Powered by : <a href=https://github.com/basyair7 target='_blank'>Basyair7</a></b></p>
+</body>
+</html>
+)rawliteral";
+
+const char success_save_rename_kodekubikel[] PROGMEM = R"rawliteral(
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta name='description' content='rename-kodekubikel'>
+    <meta name='author' content='basyair7'>
+    <title>Rename Kubikel Code - TempCubiclePi %s</title>
+</head>
+<body>
+    <table>
+        <thead>
+            <caption><h4>Data telah di simpan</h4></caption>
+        </thead>
+        <tbody>
+            <tr>
+                <td>New Code </td>
+                <td>%s</td>
+            </tr>
+            <tr>
+                <td> </td>
+                <td><a href=http://%s/help>Kembali ke Menu</a></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br><p><b>Powered by : <a href=https://github.com/basyair7 target='_blank'>Basyair7</a></b></p>
+</body>
+</html>
+)rawliteral";
+
+const char config_wifi_1[] PROGMEM = R"rawliteral(
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta name='description' content='configWiFi'>
+    <meta name='author' content='basyair7'>
+    <title>WiFi Configuration - TempCubiclePi %s </title>
+</head>
+<body>
+    <h4>WiFi Configuration - TempCubiclePi %s </h4>
+    <p>Server kubikel %s akan di restart dan ganti mode WIFI AP terlebih dahulu... <br />
+        silahkan koneksikan WiFi : %s dan Password %s
+    </p>
+    <p>Setelah terkoneksi ke WiFi %s silahkan klik <a href=http://192.168.4.1 target='_blank'> Helper Page </a></p>
+    
+    <br><p><b>Powered by : <a href=https://github.com/basyair7 target='_blank'>Basyair7</a></b></p>
+</body>
+</html>
+)rawliteral";
+
+const char config_wifi_2[] PROGMEM = R"rawliteral(
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta name='description' content='configWiFi'>
+    <meta name='author' content='basyair7'>
+    <title>WiFi Configuration - TempCubiclePi %s </title>
+</head>
+<body>
+    <h4>WiFi Configuration - TempCubiclePi %s </h4>
+    <form method='POST' action='/config-wifi-save'>
+        <table>
+            <thead>
+                <caption><b>Old WiFi Configuration : </b></caption>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>SSID </td>
+                    <td>%s</td>
+                </tr>
+                <tr>
+                    <td>Password </td>
+                    <td>%s</td>
+                </tr>
+            </tbody>
+            <br />
+            <thead>
+                <caption><b>New Configuration : </b></caption>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>SSID </td>
+                    <td><input type='text' name='newssid'></td>
+                </tr>
+                <tr>
+                    <td>Password </td>
+                    <td><input type='password' name='newpassword'></td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td><button type='submit' value='save'>Save</button></td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td><a href=http://%s/help>Kembali ke Menu</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+
+    <br><p><b>Powered by : <a href=https://github.com/basyair7 target='_blank'>Basyair7</a></b></p>
+</body>
+</html>
+)rawliteral";
+
+const char success_save_config_wifi[] PROGMEM = R"rawliteral(
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta name='description' content='configWiFi'>
+    <meta name='author' content='basyair7'>
+    <title>WiFi Configuration - TempCubiclePi %s</title>
+</head>
+<body>
+    <table>
+        <thead>
+            <caption><h4>Data telah di simpan</h4></caption>
+        </thead>
+        <tbody>
+            <tr>
+                <td>New WiFi SSID </td>
+                <td>%s</td>
+            </tr>
+            <tr>
+                <td>New WiFi Password </td>
+                <td>%s</td>
+            </tr>
+            <tr>
+                <td> </td>
+                <td><a href=http://%s/help>Kembali ke Menu</a></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br><p><b>Powered by : <a href=https://github.com/basyair7 target='_blank'>Basyair7</a></b></p>
+</body>
+</html>
+)rawliteral";
+
+const char config_ap[] PROGMEM = R"rawliteral(
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta name='description' content='configAP'>
+    <meta name='author' content='basyair7'>
+    <title>Access Point WiFi Configuration - TempCubiclePi %s </title>
+</head>
+<body>
+    <h4>Access Point WiFi Configuration - TempCubiclePi %s </h4>
+    <form method='POST' action='/config-ap-save'>
+        <table>
+            <thead>
+                <caption><b>Old Access Point WiFi Configuration : </b></caption>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Access Point Name </td>
+                    <td>%s</td>
+                </tr>
+                <tr>
+                    <td>Password </td>
+                    <td>%s</td>
+                </tr>
+            </tbody>
+            <br />
+            <thead>
+                <caption><b>New Configuration : </b></caption>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Name AP </td>
+                    <td><input type='text' name='newap'></td>
+                </tr>
+                <tr>
+                    <td>Password </td>
+                    <td><input type='password' name='newpassword'></td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td><button type='submit' value='save'>Save</button></td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td><a href=http://%s/help>Kembali ke Menu</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+
+    <br><p><b>Powered by : <a href=https://github.com/basyair7 target='_blank'>Basyair7</a></b></p>
+</body>
+</html>
+)rawliteral";
+
+const char success_save_config_ap[] PROGMEM = R"rawliteral(
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta name='description' content='configAP'>
+    <meta name='author' content='basyair7'>
+    <title>Access Point WiFi Configuration - TempCubiclePi %s</title>
+</head>
+<body>
+    <table>
+        <thead>
+            <caption><h4>Data telah di simpan</h4></caption>
+        </thead>
+        <tbody>
+            <tr>
+                <td>New AP Name </td>
+                <td>%s</td>
+            </tr>
+            <tr>
+                <td>New AP Password </td>
+                <td>%s</td>
+            </tr>
+            <tr>
+                <td> </td>
+                <td><a href=http://%s/help>Kembali ke Menu</a></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br><p><b>Powered by : <a href=https://github.com/basyair7 target='_blank'>Basyair7</a></b></p>
 </body>
 </html>
 )rawliteral";

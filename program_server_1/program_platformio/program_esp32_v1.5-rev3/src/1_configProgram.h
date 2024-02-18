@@ -10,25 +10,25 @@
 #include <WebServer.h>
 #include <HTTPUpdateServer.h>
 
-// setting find WiFi Hotspot
-#ifndef STASSID
-#define STASSID "TempCubiclePi@PA01"
-#define STAPSK "serverpa01"
-extern String ipAddress;
-extern String version;
-#endif
-
 #ifndef CONFIGPROGRAM_H
 #define CONFIGPROGRAM_H
 
 // informasi firmware
-#define FIRMWAREVERSION "1.5.3.12"
-#define BUILDTIME       "17/2/2024 10.58"
+#define FIRMWAREVERSION "1.5.3.13"
+#define BUILDTIME       "18/2/2024 04:34 AM"
 #define FIRMWAREREGION  "Indonesia"
 
 // informasi kubikel
-#define kodekubikel "PA01"
+#define defaultkodekubikel "default"
+extern String kodekubikel;
+
+// setting find WiFi AP
+#define STASSID "TempCubiclePi"
+#define STAPSK  "87654321"
 extern String ipAddress;
+extern String ssid, password;
+extern String APName, APPassword;
+extern String version;
 
 // batas suhu normal dalam kubikel
 #define MIN_TEMP 35 // 35 C
@@ -58,8 +58,7 @@ extern bool buzzerSwitch;
 // Pinout Serial Data Arduino
 #define atmegaRX1   25
 #define atmegaTX1   26
-extern int callback_1;
-extern int callback_4;
+extern byte callback_1, callback_4;
 
 // deklarasi variabel interval program berjalan
 #define interval_1 50   // 50ms = 0.05 detik => lama waktu mengirim data
@@ -105,7 +104,7 @@ extern void server_setup(void);
 extern void print_data(void);
 
 // 8_configWiFi.cpp
-extern void ledMode(bool Mode_wifi_AP, uint64_t interval_start, uint64_t interval_end);
+extern void ledMode(bool Mode_wifi_AP, unsigned long interval_start, unsigned long interval_end);
 extern void initWiFi(void), checkWiFiConfig();
 extern void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info);
 extern void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info);
@@ -117,7 +116,7 @@ extern void noTone(byte pin);
 extern void NotifFuzzy (byte pinSound, bool state);
 extern void NotifBuzzer (byte pinSound);
 extern void buzzer_main(byte buzzerPin, int STATE);
-extern void buzzer_error(byte buzzerPin, uint64_t millisMain, uint64_t interval);
+extern void buzzer_error(byte buzzerPin, unsigned long millisMain, unsigned long interval);
 extern void buzzer_startup(byte buzzer);
 extern void buzzer_shutdown(byte buzzer);
 
@@ -132,13 +131,14 @@ extern void fis_evaluate();
 extern void setupSPIFFS(void);
 extern bool readConfig(String stateConfig);
 extern void saveConfig(String stateConfig, bool value);
-extern void saveConfigWiFi(String ssid, String password); 
-extern String loadConfigWiFi();
+extern void saveConfigWiFi(String ssid, String password);
+extern void saveConfigAP(String ssid, String password);
+extern void saveKubikelCode(String code);
 extern void removeSPIFFS(String path);
 extern void listSPIFFSFiles();
 extern void openFileSPIFFS(const char* fileName);
-extern String loadSSID();
-extern String loadPassword();
+extern String loadSSID(), loadAPName(), loadAPPassword();
+extern String loadPassword(), loadKubikelCode();
 
 // buat class DataFuzzy untuk menampung nilai dari arduino
 class DATAFUZZY {

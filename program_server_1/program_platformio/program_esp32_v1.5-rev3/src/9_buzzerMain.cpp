@@ -55,7 +55,7 @@ int noteDuration_3[] = {
 // this program tone buzzer in esp32
 int playing = 0;
 bool shutdown_sound = false;
-uint64_t waktuSebelum_playBuzzer = 0;
+unsigned long waktuSebelum_playBuzzer = 0;
 void tone(byte pin, int freq, int d) {
   ledcSetup(0, 2000, 8); // setup beeper
   ledcAttachPin(pin, 0); // attach beeper
@@ -80,7 +80,7 @@ void buzzer_main(byte buzzerPin, int STATE) {
 }
 
 // program buzzer error
-void buzzer_error(byte buzzerPin, uint64_t millisMain, uint64_t interval) 
+void buzzer_error(byte buzzerPin, unsigned long millisMain, unsigned long interval) 
 {
   if(BuzzerState == HIGH) {
     if(millisMain - waktuSebelum_playBuzzer >= interval) {

@@ -9,18 +9,19 @@
 #include "1_configProgram.h"
 
 // program reconnect wifi server
-String ipAddress;
-uint64_t previous_time = 0;
+String ipAddress, ssid, password;
+String APName, APPassword;
+unsigned long previous_time = 0;
 uint8_t selfReset = 0;
 // int changeMode = SelfChangeMode;
 
-uint64_t currentTimeLedStart = 0, currentTimeLedEnd = 0;
+unsigned long currentTimeLedStart = 0, currentTimeLedEnd = 0;
 uint8_t LedState = HIGH;
 void ledState(uint8_t STATE) {
     digitalWrite(LED_BUILTIN, STATE);
 }
 
-void ledMode(bool Mode_wifi_AP, uint64_t interval_start, uint64_t interval_end) {
+void ledMode(bool Mode_wifi_AP, unsigned long interval_start, unsigned long interval_end) {
     if(!Mode_wifi_AP) return;
     if(LedState == HIGH) {
         if(millis() - currentTimeLedStart >= interval_start) {
@@ -37,14 +38,37 @@ void ledMode(bool Mode_wifi_AP, uint64_t interval_start, uint64_t interval_end) 
 }
 
 void checkWiFiConfig() {
-    Serial.print(F("SSID : "));
-    Serial.println(loadSSID());
-    Serial.print(F("Password : "));
-    Serial.println(loadPassword());
+    ssid = loadSSID(); password = loadPassword();
+    Serial.print(F("SSID WiFi : "));
+    Serial.println(ssid);
+    Serial.print(F("Password WiFi : "));
+    Serial.println(password);
+    Serial.print(F("\nMode AP : "));
+    Serial.println(
+        (wifi_AP_mode == true ? "AP Hotspot" : "Client WiFi")
+    );
+
+    if(wifi_AP_mode){
+        if(loadAPName() == "" || loadAPPassword() == "") {
+            saveConfigAP(STASSID, STAPSK);
+            APName = STASSID; APPassword = STAPSK;
+            Serial.print(F("AP Name : "));
+            Serial.println(APName);
+            Serial.print(F("AP Password : "));
+            Serial.println(APPassword);
+
+        } else {
+            APName = loadAPName(); APPassword = loadAPPassword();
+            Serial.print(F("AP Name : "));
+            Serial.println(APName);
+            Serial.print(F("AP Password : "));
+            Serial.println(APPassword);
+        }
+    }
 }
 
 void changeModeAP() {
-    Serial.print(F("Self reset in : ")); Serial.println(10-selfReset);
+    Serial.print(F("\nAuto Mode Access Point in : ")); Serial.println(10-selfReset);
     if(selfReset > 10) {
         saveConfig("changeMode", true);
         ESP.restart();
@@ -69,8 +93,8 @@ void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info)
 
 void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info)
 {
-    long current_time = millis();
-    if((WiFi.status() != WL_CONNECTED && !wifi_AP_mode && loadSSID() != "" && loadPassword() != "") 
+    unsigned long current_time = millis();
+    if((WiFi.status() != WL_CONNECTED && !wifi_AP_mode && ssid != "" && password != "") 
         && (current_time - previous_time >= interval_reconnect)) 
     {
         if(SelfChangeMode) changeModeAP();
@@ -78,7 +102,7 @@ void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info)
         Serial.print(F("WiFi lost connection, Reason "));
         Serial.println(info.wifi_sta_disconnected.reason);
         Serial.println(F("Trying to reconnect"));
-        WiFi.begin(loadSSID(), loadPassword());
+        WiFi.begin(ssid, password);
         tone(pin_buzzer, 500, 100);
         tone(pin_buzzer, 2000, 20);
         noTone(pin_buzzer);
@@ -88,9 +112,9 @@ void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info)
 
 void initWiFi()
 {
-    if(!wifi_AP_mode && loadSSID() != "" && loadPassword() != "") {
+    if(!wifi_AP_mode && ssid != "" && password != "") {
         WiFi.mode(WIFI_STA);
-        WiFi.begin(loadSSID(), loadPassword());
+        WiFi.begin(ssid, password);
         Serial.println(F("Connecting to WiFi..."));
         while (WiFi.status() != WL_CONNECTED) {
             funcMain();
@@ -98,7 +122,7 @@ void initWiFi()
         }
         ipAddress = WiFi.localIP().toString().c_str();
     } else {
-        WiFi.softAP(STASSID, STAPSK);
+        WiFi.softAP(APName, APPassword);
         ipAddress = WiFi.softAPIP().toString().c_str();
     }
 }

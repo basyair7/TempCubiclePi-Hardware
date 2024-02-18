@@ -105,6 +105,8 @@ void setup() {
   // Check fuzzy condition is disabled or not
   programReadSPIFFS();
 
+  checkWiFiConfig();
+
   // Turn on buzzer_startup if server esp is ready!
   buzzer_startup(pin_buzzer);
   delay(3000);
@@ -115,7 +117,6 @@ void setup() {
   );
 
   if(stateWiFiProgram) {
-    checkWiFiConfig();
     ElegantOTA.begin(&server);
     // create a Task for program 2
     xTaskCreateUniversal(
