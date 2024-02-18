@@ -39,6 +39,7 @@ void ledMode(bool Mode_wifi_AP, unsigned long interval_start, unsigned long inte
 
 void checkWiFiConfig() {
     ssid = loadSSID(); password = loadPassword();
+    APName = loadAPName(); APPassword = loadAPPassword();
     Serial.print(F("SSID WiFi : "));
     Serial.println(ssid);
     Serial.print(F("Password WiFi : "));
@@ -49,7 +50,7 @@ void checkWiFiConfig() {
     );
 
     if(wifi_AP_mode){
-        if(loadAPName() == "" || loadAPPassword() == "") {
+        if(APName == "" || APPassword == "") {
             saveConfigAP(STASSID, STAPSK);
             APName = STASSID; APPassword = STAPSK;
             Serial.print(F("AP Name : "));
@@ -58,7 +59,6 @@ void checkWiFiConfig() {
             Serial.println(APPassword);
 
         } else {
-            APName = loadAPName(); APPassword = loadAPPassword();
             Serial.print(F("AP Name : "));
             Serial.println(APName);
             Serial.print(F("AP Password : "));
